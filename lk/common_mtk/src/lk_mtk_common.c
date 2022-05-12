@@ -20,10 +20,8 @@
 
 bool metadata_fail;
 block_dev_desc_t *bdev;
-lv_indev_drv_t indev_drv;
-lv_indev_t * lvgl_mtk_indev;
 
-void droidboot_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p)
+void droidboot_mtk_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p)
 {
     time_t t;
 	int32_t x, y;
@@ -38,17 +36,21 @@ void droidboot_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_col
     }
     
 	// Update display
-	t = current_time();
+    #ifdef FROIDBOOT_PLATFORM_DEBUG
+    t = current_time();
+    #endif
     mt_disp_update(area->x1, area->y1, area->x2, area->y2);
+    #ifdef FROIDBOOT_PLATFORM_DEBUG
     t=current_time()-t;
     printf("mt disp update took\n", (uint)t);
+    #endif
 
     // Inform the graphics library that we are ready with the flushing
     lv_disp_flush_ready(disp_drv);
 }
 
 //Read keys state
-bool droidboot_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
+bool droidboot_mtk_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
 {
     data->key = LV_KEY_PREV;
     if (mtk_detect_key(MT65XX_MENU_SELECT_KEY)){
@@ -69,7 +71,7 @@ bool droidboot_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
 }
 
 //Init emmc and bio
-void droidboot_settings_init(){
+void droidboot_mtk_settings_init(){
     int err;
     err=mmc_init(1, 1);
     u64 g_emmc_size = 0;
@@ -109,35 +111,25 @@ void droidboot_settings_init(){
 	
 	
 	err=partition_publish("mmc1", 0);
-	bio_dump_devices();
-	video_printf("partition publish returnes: %d\n\n\n", err);
 }
 
-void droidboot_drivers_init()
+void droidboot_mtk_sd_check()
 {
-    lv_indev_drv_init(&indev_drv);      /*Basic initialization*/
-    indev_drv.type = LV_INDEV_TYPE_KEYPAD;
-    indev_drv.read_cb = lvgl_mtk_key_read;
-    /*Register the driver in LVGL and save the created input device object*/
-    lvgl_mtk_indev = lv_indev_drv_register(&indev_drv);
+    // This function is not part of mtk-lk as it dose not support SD card ootb, so it must be implemented in lk.
     init_sd_card();
     
     int ret = fs_mount("/boot", "ext2", "mmc1p1"); //try to mount abm_settings
 	if(ret != 0){
-	    metadata_fail=true;
+	    return false;
 	}
 	else{
-	    metadata_fail=false;
 	    fs_unmount("/boot");
+	    return true;
 	}
-	lvgl_volla_style_init();
 }
 
-bool droidboot_get_metadata_fail(){
-    return metadata_fail;
-}
 // This function must not be here, as lvgl already have its own fs support, but it needs fseek and ftell wich are not supported by our fs driver, due to that fact we handle image loading ourself.
-struct lv_img_dsc_t* droidboot_load_image_from_fs(char* path){
+struct lv_img_dsc_t* droidboot_mtk_load_image_from_fs(char* path){
     int ret=0;
     filehandle *entry_file_handle = NULL;
     ret=fs_mount("/boot", "ext2", "mmc1p1");

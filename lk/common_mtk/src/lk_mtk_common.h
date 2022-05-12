@@ -1,11 +1,16 @@
 #include <lvgl.h>
 
-lv_indev_drv_t indev_drv;
-lv_indev_t * lvgl_mtk_indev;
-
 // Display flush 
-void droidboot_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
+void droidboot_mtk_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
 
-void droidboot_drivers_init();
+// Read buttons state in lvgl style
+bool droidboot_mtk_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data);
 
-bool droidboot_get_metadata_fail();
+// Initi mmc (sd) stuff
+void droidboot_mtk_settings_init();
+
+// Verify if there is abm compatible sd card
+void droidboot_mtk_sd_check();
+
+// HACK: image loading for lvgl in hacky manner
+struct lv_img_dsc_t* droidboot_mtk_load_image_from_fs(char* path);
