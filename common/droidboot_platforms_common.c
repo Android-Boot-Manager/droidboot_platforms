@@ -1,4 +1,4 @@
-#ifdef PLATFORM_YGGDRASIL
+#if defined(PLATFORM_YGGDRASIL)
 #include <lk_mtk_common.h>
 #include <yggdrasil.h>
 #elif defined(PLATFORM_YGGDRASILX)
