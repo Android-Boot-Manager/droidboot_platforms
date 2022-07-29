@@ -1,1 +1,1 @@
-INCLUDES += $(LOCAL_PATH)/lk/common/src
+INCLUDES += $(DROIDBOOT_PLATFORM_LOCAL_PATH)/lk/common/src
