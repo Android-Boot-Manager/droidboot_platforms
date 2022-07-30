@@ -21,7 +21,7 @@
 bool metadata_fail;
 block_dev_desc_t *bdev;
 
-void droidboot_mtk_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p)
+void droidboot_internal_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p)
 {
     time_t t;
 	int32_t x, y;
@@ -50,7 +50,7 @@ void droidboot_mtk_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv
 }
 
 //Read keys state
-bool droidboot_mtk_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
+bool droidboot_internal_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
 {
     data->key = LV_KEY_PREV;
     if (mtk_detect_key(MT65XX_MENU_SELECT_KEY)){
