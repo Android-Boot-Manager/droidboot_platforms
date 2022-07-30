@@ -36,11 +36,11 @@ void droidboot_mtk_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv
     }
     
 	// Update display
-    #ifdef FROIDBOOT_PLATFORM_DEBUG
+    #ifdef DROIDBOOT_PLATFORM_DEBUG
     t = current_time();
     #endif
     mt_disp_update(area->x1, area->y1, area->x2, area->y2);
-    #ifdef FROIDBOOT_PLATFORM_DEBUG
+    #ifdef DROIDBOOT_PLATFORM_DEBUG
     t=current_time()-t;
     printf("mt disp update took\n", (uint)t);
     #endif
@@ -72,7 +72,7 @@ bool droidboot_mtk_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
 
 //Init emmc and bio
 void droidboot_mtk_settings_init(){
-    int err;
+   /* int err;
     err=mmc_init(1, 1);
     u64 g_emmc_size = 0;
     u64 g_emmc_user_size = 0;
@@ -99,24 +99,24 @@ void droidboot_mtk_settings_init(){
 	bdev->block_read  = mmc_wrap_bread;
 	bdev->block_write = mmc_wrap_bwrite;
 	
-	mmc_sdhci_bdev_t *bdev1 = malloc(sizeof(mmc_sdhci_bdev_t));
+	mmc_sdhci_bdev_t *bdev1 = malloc(sizeof(mmc_sdhci_bdev_t));*/
 	/* set up the base device */
-    bio_initialize_bdev(&bdev1->dev, "mmc1", card->blklen,card->nblks);
+   // bio_initialize_bdev(&bdev1->dev, "mmc1", card->blklen,card->nblks);
 	/* our bits */
-	bdev1->mmcdev = bdev;
-	bdev1->dev.read_block = mmc_sdhci_bdev_read_block;
+//	bdev1->mmcdev = bdev;
+	//bdev1->dev.read_block = mmc_sdhci_bdev_read_block;
 	/* register it */
-	bio_register_device(&bdev1->dev);
-	bio_dump_devices();
+	//bio_register_device(&bdev1->dev);
+	//bio_dump_devices();
 	
 	
-	err=partition_publish("mmc1", 0);
+	//err=partition_publish("mmc1", 0);
 }
 
 void droidboot_mtk_sd_check()
 {
     // This function is not part of mtk-lk as it dose not support SD card ootb, so it must be implemented in lk.
-    init_sd_card();
+    /*init_sd_card();
     
     int ret = fs_mount("/boot", "ext2", "mmc1p1"); //try to mount abm_settings
 	if(ret != 0){
@@ -125,20 +125,20 @@ void droidboot_mtk_sd_check()
 	else{
 	    fs_unmount("/boot");
 	    return true;
-	}
+	}*/
 }
 
 // This function must not be here, as lvgl already have its own fs support, but it needs fseek and ftell wich are not supported by our fs driver, due to that fact we handle image loading ourself.
 struct lv_img_dsc_t* droidboot_mtk_load_image_from_fs(char* path){
-    int ret=0;
+    /*int ret=0;
     filehandle *entry_file_handle = NULL;
     ret=fs_mount("/boot", "ext2", "mmc1p1");
     
     off_t entry_file_size = fs_get_file_size(path);
     off_t header_len      = sizeof(lv_img_header_t);          // file header struct
-    off_t buf_len         = entry_file_size - header_len;     // file size minus header size
+    off_t buf_len         = entry_file_size - header_len;     // file size minus header size*/
     lv_img_dsc_t* img_dsc = malloc(sizeof(lv_img_dsc_t));     // image descriptor struct
-    unsigned char *buf    = malloc(buf_len);                  // pixel data only
+    /*unsigned char *buf    = malloc(buf_len);                  // pixel data only
 
     ret=fs_open_file(path, &entry_file_handle);
     if(ret!=0)
@@ -150,6 +150,6 @@ struct lv_img_dsc_t* droidboot_mtk_load_image_from_fs(char* path){
 
     img_dsc->data      = buf;
     img_dsc->data_size = buf_len;
-    fs_unmount("/boot");
+    fs_unmount("/boot");*/
     return img_dsc;
 }
