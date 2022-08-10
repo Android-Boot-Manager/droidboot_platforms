@@ -128,6 +128,17 @@ void droidboot_mtk_sd_check()
 	}*/
 }
 
+// Get screen height and width
+int droidboot_get_display_height()
+{
+    return DISP_GetScreenHeight();
+}
+
+int droidboot_get_display_width()
+{
+    return DISP_GetScreenWidth();
+}
+
 // This function must not be here, as lvgl already have its own fs support, but it needs fseek and ftell wich are not supported by our fs driver, due to that fact we handle image loading ourself.
 struct lv_img_dsc_t* droidboot_mtk_load_image_from_fs(char* path){
     /*int ret=0;

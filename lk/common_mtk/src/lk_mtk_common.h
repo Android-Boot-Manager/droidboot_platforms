@@ -12,5 +12,9 @@ void droidboot_mtk_settings_init();
 // Verify if there is abm compatible sd card
 void droidboot_mtk_sd_check();
 
+// Get screen height and width
+int droidboot_get_display_height();
+int droidboot_get_display_width();
+
 // HACK: image loading for lvgl in hacky manner
 struct lv_img_dsc_t* droidboot_mtk_load_image_from_fs(char* path);
