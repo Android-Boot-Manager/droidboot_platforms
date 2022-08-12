@@ -3,6 +3,9 @@ DROIDBOOT_PLATFORM ?= $(strip $(PLATFORM))
 
 LK_DEVICES := cedric yggdrasil yggdrasilx
 
+INCLUDES += $(DROIDBOOT_PLATFORM_LOCAL_PATH)/common
+OBJS += $(DROIDBOOT_PLATFORM_LOCAL_PATH)/common/droidboot_platform_common.o
+
 ifeq (,$(DROIDBOOT_PLATFORM))
     $(error Please define the target device)
 endif

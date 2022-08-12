@@ -3,6 +3,7 @@
 
 #include <lvgl.h>
 #include <ext4.h>
+#include <droidboot_error.h>
 
 #if defined(PLATFORM_YGGDRASIL)
 #include <lk_mtk_common.h>
@@ -31,4 +32,12 @@ int droidboot_platform_settings_dev_close(struct ext4_blockdev *bdev);
 int droidboot_platform_settings_dev_bread(struct ext4_blockdev *bdev, void *buf, uint32_t blk_id, uint32_t blk_count);
 int droidboot_platform_settings_dev_bwrite(struct ext4_blockdev *bdev, const void *buf,
 			  uint32_t blk_id, uint32_t blk_cnt);
+			  
+droidboot_error droidboot_platform_init();
+droidboot_error droidboot_platform_get_storage_part_offset();
+droidboot_error droidboot_platform_get_storage_block_count();
+droidboot_error droidboot_platform_get_storage_size();
+
+int droidboot_get_disp_buffer_height();
+bool droidboot_use_double_buffering();
 #endif
