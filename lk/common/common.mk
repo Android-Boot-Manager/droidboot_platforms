@@ -1,1 +1,2 @@
 INCLUDES += $(DROIDBOOT_PLATFORM_LOCAL_PATH)/lk/common/src
+OBJS += $(DROIDBOOT_PLATFORM_LOCAL_PATH)/lk/common/src/lk_common.o

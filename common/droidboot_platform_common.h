@@ -40,4 +40,6 @@ droidboot_error droidboot_platform_get_storage_size();
 
 int droidboot_get_disp_buffer_height();
 bool droidboot_use_double_buffering();
+
+void droidboot_lvgl_threads_init();
 #endif

@@ -63,3 +63,8 @@ bool droidboot_use_double_buffering()
 {
     return droidboot_internal_use_double_buffering();
 }
+
+void droidboot_lvgl_threads_init()
+{
+    droidboot_internal_lvgl_threads_init();
+}

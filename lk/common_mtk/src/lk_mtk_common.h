@@ -1,3 +1,4 @@
+#pragma once
 #include <lvgl.h>
 
 // Display flush 
