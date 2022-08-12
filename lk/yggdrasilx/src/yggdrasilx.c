@@ -14,7 +14,7 @@ char* get_model(){
 
 int droidboot_internal_get_disp_buffer_height()
 {
-    return droidboot_get_display_height()/6;
+    return 30;
 }
 
 bool droidboot_internal_use_double_buffering()
