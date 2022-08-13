@@ -7,6 +7,7 @@ static int droidboot_lv_tick_inc_thread(void * arg) {
   while (1) {
     thread_sleep(1);
     lv_tick_inc(1);
+    //lv_timer_handler();
   }
   return 0;
 }

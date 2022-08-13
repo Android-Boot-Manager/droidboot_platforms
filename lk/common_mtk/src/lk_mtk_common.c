@@ -1,5 +1,7 @@
 // This file contains lvgl drivers for mtk lk based bootloader, it provides basic functions such as framebuffer flush and buttons support
 #include <lvgl.h>
+#include <droidboot_drivers.h>
+
 #include <platform/mt_disp_drv.h>
 #include <platform/mtk_key.h>
 #include <target/cust_key.h>
@@ -164,3 +166,76 @@ struct lv_img_dsc_t* droidboot_mtk_load_image_from_fs(char* path){
     fs_unmount("/boot");*/
     return img_dsc;
 }
+
+// Next functions implements gui functions used by target BOOTLOADER code, those are not part of ABM droidboot aoi, and should not be callesd from droidboot code
+int exit;
+static lv_obj_t* currentButton = NULL;
+static void droidboot_mtk_menu_event_handler(lv_event_t * e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+    lv_obj_t * obj = lv_event_get_target(e);
+    if(code == LV_EVENT_CLICKED) {
+        int index = lv_obj_get_child_id(obj);
+        if(index==0)
+        {   
+            exit=2;
+        }
+        if(index==1)
+        {   
+            exit=99;
+        }
+        if(index==2)
+        {   
+            exit=9;
+        }
+        if(index==3)
+        {
+            exit=0;
+        }
+    }
+}
+
+void droidboot_mtk_main_menu_add_options(lv_obj_t * list1)
+{
+    lv_obj_t * list_btn;
+    list_btn = lv_list_add_btn(list1,  NULL, "\nBoot recovery");
+    lv_obj_add_event_cb(list_btn, droidboot_mtk_menu_event_handler, LV_EVENT_CLICKED, NULL);
+    list_btn = lv_list_add_btn(list1,  NULL, "\nEnter fastboot menu");
+    lv_obj_add_event_cb(list_btn, droidboot_mtk_menu_event_handler, LV_EVENT_CLICKED, NULL);
+    list_btn = lv_list_add_btn(list1,  NULL, "\nNormal boot");
+    lv_obj_add_event_cb(list_btn, droidboot_mtk_menu_event_handler, LV_EVENT_CLICKED, NULL);
+    
+    /*if(!lvgl_mtk_get_metadata_fail()){
+        list_btn = lv_list_add_btn(list1,  &next_menu_logo, "\nEnter dualboot menu");
+        lv_obj_add_style(list_btn, &lvgl_volla_list_button_style, 0);
+        lv_obj_add_style(list_btn, &lvgl_volla_list_button_pressed_style, LV_STATE_FOCUS_KEY); 
+        lv_obj_add_event_cb(list_btn, lvgl_menu_event_handler, LV_EVENT_CLICKED, NULL);
+    }*/
+}
+
+
+int droidboot_mtk_show_boot_mode_menu()
+{
+    exit=-1;
+    
+    lv_group_t * lvgl_main_menu_group = lv_group_create();
+    lv_group_set_default(lvgl_main_menu_group);
+
+    lv_indev_set_group(droidboot_lvgl_indev, lvgl_main_menu_group);
+    lv_obj_t * win = lv_win_create(lv_scr_act(), lv_pct(15));
+    lv_obj_set_pos(win, 0, 0);
+    lv_obj_set_size(win, lv_pct(100), lv_pct(90));
+    lv_obj_t * win_title = lv_win_add_title(win, "  Recovery Menu"); 
+    lv_obj_set_pos(win_title, 0, 0);
+    lv_obj_t * list1 = lv_list_create(win); 
+    lv_obj_set_size(list1, lv_pct(100), lv_pct(100));
+    lv_obj_set_pos(list1, 0, 0);
+    lv_obj_align(list1, LV_ALIGN_BOTTOM_MID, 0, 0);
+    droidboot_mtk_main_menu_add_options(list1);
+    lv_group_focus_obj(win);
+    while(exit==-1){
+        mdelay(50);
+    }
+    return exit;
+}
+
