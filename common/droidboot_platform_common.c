@@ -68,3 +68,20 @@ void droidboot_lvgl_threads_init()
 {
     droidboot_internal_lvgl_threads_init();
 }
+
+
+void droidboot_platform_on_screen_log(droidboot_log_level log_level, const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    droidboot_internal_platform_on_screen_log(fmt, args);
+    va_end(args);
+}
+
+void droidboot_platform_system_log(droidboot_log_level log_level, const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    droidboot_internal_platform_system_log(fmt, args);
+    va_end(args);
+}

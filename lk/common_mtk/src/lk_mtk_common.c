@@ -1,6 +1,7 @@
 // This file contains lvgl drivers for mtk lk based bootloader, it provides basic functions such as framebuffer flush and buttons support
 #include <lvgl.h>
 #include <droidboot_drivers.h>
+#include <droidboot_logging.h>
 
 #include <platform/mt_disp_drv.h>
 #include <platform/mtk_key.h>
@@ -153,6 +154,25 @@ struct lv_img_dsc_t* droidboot_mtk_load_image_from_fs(char* path){
     fs_unmount("/boot");*/
     return img_dsc;
 }
+
+
+// Logging functions
+void droidboot_internal_platform_on_screen_log(droidboot_log_level log_level, const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    video_printf(fmt, args);
+    va_end(args);
+}
+
+void droidboot_internal_platform_system_log(droidboot_log_level log_level, const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    printf(fmt, args);
+    va_end(args);
+}
+
 
 // Next functions implements gui functions used by target BOOTLOADER code, those are not part of ABM droidboot aoi, and should not be callesd from droidboot code
 int exit;

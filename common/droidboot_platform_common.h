@@ -4,6 +4,7 @@
 #include <lvgl.h>
 #include <ext4.h>
 #include <droidboot_error.h>
+#include <droidboot_logging.h>
 
 #if defined(PLATFORM_YGGDRASIL)
 #include <lk_mtk_common.h>
@@ -42,4 +43,7 @@ int droidboot_get_disp_buffer_height();
 bool droidboot_use_double_buffering();
 
 void droidboot_lvgl_threads_init();
+
+void droidboot_platform_on_screen_log(droidboot_log_level log_level, const char *fmt, ...);
+void droidboot_platform_system_log(droidboot_log_level log_level, const char *fmt, ...);
 #endif
