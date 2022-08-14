@@ -72,47 +72,34 @@ bool droidboot_internal_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
    
 }
 
-//Init emmc and bio
-void droidboot_mtk_settings_init(){
-   /* int err;
-    err=mmc_init(1, 1);
-    u64 g_emmc_size = 0;
-    u64 g_emmc_user_size = 0;
-    
-    struct mmc_host *host;
-	struct mmc_card *card;
-	bdev = malloc(sizeof(block_dev_desc_t));
-	u8 *ext_csd;
-	
-	card=mmc_get_card(1);
-    host=mmc_get_host(1);
-	g_emmc_user_size = (u64)card->blklen * card->nblks;
+//Init SD card
+int dridboot_mtk_sd_card()
+{
+    return mmc_init(1, 1);
+}
 
-	bdev->dev         = 1;
-	bdev->type        = BOOTDEV_SDMMC;
-	bdev->blksz       = (u64)card->blklen;
-	ext_csd = &card->raw_ext_csd[0];
-	if (ext_csd[EXT_CSD_ERASE_GRP_DEF] & EXT_CSD_ERASE_GRP_DEF_EN)
-		bdev->erasesz = card->ext_csd.hc_erase_grp_sz * 512 * 1024;
-	else
-		bdev->erasesz = card->csd.erase_sctsz * 512;
-	bdev->lba         = card->nblks * card->blklen / MMC_BLOCK_SIZE;
-	bdev->blk_bits    = 9;
-	bdev->block_read  = mmc_wrap_bread;
-	bdev->block_write = mmc_wrap_bwrite;
-	
-	mmc_sdhci_bdev_t *bdev1 = malloc(sizeof(mmc_sdhci_bdev_t));*/
-	/* set up the base device */
-   // bio_initialize_bdev(&bdev1->dev, "mmc1", card->blklen,card->nblks);
-	/* our bits */
-//	bdev1->mmcdev = bdev;
-	//bdev1->dev.read_block = mmc_sdhci_bdev_read_block;
-	/* register it */
-	//bio_register_device(&bdev1->dev);
-	//bio_dump_devices();
-	
-	
-	//err=partition_publish("mmc1", 0);
+ssize_t dridboot_internal_sd_read_block(void *buf, bnum_t block, uint count)
+{
+    return mmc_block_read(1, block, count, (unsigned long*)buf);
+}
+
+ssize_t dridboot_internal_sd_write_block(struct bdev *_bdev, const void *buf, bnum_t block, uint count)
+{
+    return mmc_block_write(1, block, count, buf);
+}
+
+uint32_t droidboot_internal_sd_blklen()
+{
+    struct mmc_card *card;
+    card=mmc_get_card(1);
+    return card->blklen;
+}
+
+uint64_t droidboot_internal_sd_blkcnt()
+{
+    struct mmc_card *card;
+    card=mmc_get_card(1);
+    return card->nblks;
 }
 
 void droidboot_mtk_sd_check()
