@@ -30,14 +30,12 @@ bool droidboot_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data);
 
 int droidboot_platform_settings_dev_open(struct ext4_blockdev *bdev);
 int droidboot_platform_settings_dev_close(struct ext4_blockdev *bdev);
-int droidboot_platform_settings_dev_bread(struct ext4_blockdev *bdev, void *buf, uint32_t blk_id, uint32_t blk_count);
-int droidboot_platform_settings_dev_bwrite(struct ext4_blockdev *bdev, const void *buf,
-			  uint32_t blk_id, uint32_t blk_cnt);
 			  
 droidboot_error droidboot_platform_init();
-droidboot_error droidboot_platform_get_storage_part_offset();
-droidboot_error droidboot_platform_get_storage_block_count();
-droidboot_error droidboot_platform_get_storage_size();
+ssize_t dridboot_sd_read_block(void *buf, uint32_t block, uint count);
+ssize_t dridboot_sd_write_block(const void *buf, uint32_t block, uint count);
+uint32_t droidboot_sd_blklen();
+uint64_t droidboot_sd_blkcnt();
 
 int droidboot_get_disp_buffer_height();
 bool droidboot_use_double_buffering();
