@@ -22,11 +22,6 @@ int droidboot_platform_settings_dev_close(struct ext4_blockdev *bdev)
     return EOK;
 }
 
-int droidboot_platform_settings_dev_bread(struct ext4_blockdev *bdev, void *buf, uint32_t blk_id, uint32_t blk_count)
-{
-  return EOK;
-}
-
 int droidboot_platform_settings_dev_bwrite(struct ext4_blockdev *bdev, const void *buf,
 			  uint32_t blk_id, uint32_t blk_cnt)
 			  {
@@ -38,19 +33,24 @@ droidboot_error droidboot_platform_init()
  return DROIDBOOT_EOK;
 }
 
-droidboot_error droidboot_platform_get_storage_part_offset()
+ssize_t dridboot_sd_read_block(void *buf, uint32_t block, uint count)
 {
- return DROIDBOOT_EOK;
+    return dridboot_internal_sd_read_block(buf, block, count);
 }
 
-droidboot_error droidboot_platform_get_storage_block_count()
+ssize_t dridboot_sd_write_block(const void *buf, uint32_t block, uint count)
 {
- return DROIDBOOT_EOK;
+    return dridboot_internal_sd_write_block(buf, block, count);
 }
 
-droidboot_error droidboot_platform_get_storage_size()
+uint32_t droidboot_sd_blklen()
 {
- return DROIDBOOT_EOK;
+    return droidboot_internal_sd_blklen();
+}
+
+uint64_t droidboot_sd_blkcnt()
+{
+    return droidboot_internal_sd_blkcnt();
 }
 
 

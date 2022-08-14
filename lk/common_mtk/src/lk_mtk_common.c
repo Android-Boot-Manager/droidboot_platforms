@@ -79,12 +79,12 @@ int dridboot_mtk_sd_card()
     return mmc_init(1, 1);
 }
 
-ssize_t dridboot_internal_sd_read_block(void *buf, bnum_t block, uint count)
+ssize_t dridboot_internal_sd_read_block(void *buf, uint32_t block, uint count)
 {
     return mmc_block_read(1, block, count, (unsigned long*)buf);
 }
 
-ssize_t dridboot_internal_sd_write_block(struct bdev *_bdev, const void *buf, bnum_t block, uint count)
+ssize_t dridboot_internal_sd_write_block(const void *buf, uint32_t block, uint count)
 {
     return mmc_block_write(1, block, count, buf);
 }
