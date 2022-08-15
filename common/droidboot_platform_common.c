@@ -30,7 +30,7 @@ int droidboot_platform_settings_dev_bwrite(struct ext4_blockdev *bdev, const voi
 
 droidboot_error droidboot_platform_init()
 {
- return DROIDBOOT_EOK;
+ return droidboot_internal_platform_init();
 }
 
 ssize_t dridboot_sd_read_block(void *buf, uint32_t block, uint count)

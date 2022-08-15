@@ -173,6 +173,11 @@ void droidboot_internal_platform_system_log(droidboot_log_level log_level, const
     va_end(args);
 }
 
+droidboot_error droidboot_internal_platform_init()
+{
+    dridboot_mtk_sd_card();
+    return DROIDBOOT_EOK;
+}
 
 // Next functions implements gui functions used by target BOOTLOADER code, those are not part of ABM droidboot aoi, and should not be callesd from droidboot code
 int exit;
