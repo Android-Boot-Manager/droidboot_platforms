@@ -157,20 +157,14 @@ struct lv_img_dsc_t* droidboot_mtk_load_image_from_fs(char* path){
 
 
 // Logging functions
-void droidboot_internal_platform_on_screen_log(droidboot_log_level log_level, const char *fmt, ...)
+void droidboot_internal_platform_on_screen_log(const char *buf)
 {
-    va_list args;
-    va_start(args, fmt);
-    video_printf(fmt, args);
-    va_end(args);
+    video_printf(buf);
 }
 
-void droidboot_internal_platform_system_log(droidboot_log_level log_level, const char *fmt, ...)
+void droidboot_internal_platform_system_log(const char *buf)
 {
-    va_list args;
-    va_start(args, fmt);
-    printf(fmt, args);
-    va_end(args);
+    printf(buf);
 }
 
 droidboot_error droidboot_internal_platform_init()

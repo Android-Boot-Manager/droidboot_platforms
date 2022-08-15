@@ -28,8 +28,8 @@ int droidboot_get_display_width();
 struct lv_img_dsc_t* droidboot_mtk_load_image_from_fs(char* path);
 
 // Logging functions
-void droidboot_internal_platform_on_screen_log(droidboot_log_level log_level, const char *fmt, ...);
-void droidboot_internal_platform_system_log(droidboot_log_level log_level, const char *fmt, ...);
+void droidboot_internal_platform_on_screen_log(const char *buf);
+void droidboot_internal_platform_system_log(const char *buf);
 
 droidboot_error droidboot_internal_platform_init();
 

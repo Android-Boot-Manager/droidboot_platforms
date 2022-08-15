@@ -42,6 +42,6 @@ bool droidboot_use_double_buffering();
 
 void droidboot_lvgl_threads_init();
 
-void droidboot_platform_on_screen_log(droidboot_log_level log_level, const char *fmt, ...);
-void droidboot_platform_system_log(droidboot_log_level log_level, const char *fmt, ...);
+void droidboot_platform_on_screen_log(const char *buf);
+void droidboot_platform_system_log(const char *buf);
 #endif
