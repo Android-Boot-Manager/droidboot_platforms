@@ -26,6 +26,9 @@
 #elif defined(PLATFORM_ASTROSLIDE)
 #include <lk_mtk_common.h>
 #include <astroslide.h>
+#elif defined(PLATFORM_MIMAMEID)
+#include <lk_mtk_common.h>
+#include <mimameid.h>
 #endif
 
 void droidboot_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
