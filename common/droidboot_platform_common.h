@@ -51,4 +51,5 @@ void droidboot_lvgl_threads_init();
 void droidboot_platform_on_screen_log(const char *buf);
 void droidboot_platform_system_log(const char *buf);
 
+void droidboot_delay(unsigned int time);
 #endif

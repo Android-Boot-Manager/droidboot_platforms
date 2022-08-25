@@ -20,6 +20,7 @@
 #include <msdc.h>
 #include <mmc_common_inter.h>
 #include <mmc_core.h>
+#include <kernel/thread.h>
 
 bool metadata_fail;
 block_dev_desc_t *bdev;
@@ -171,6 +172,11 @@ droidboot_error droidboot_internal_platform_init()
 {
     dridboot_mtk_sd_card();
     return DROIDBOOT_EOK;
+}
+
+void droidboot_internal_delay(unsigned int time)
+{
+    thread_sleep(time);
 }
 
 // Next functions implements gui functions used by target BOOTLOADER code, those are not part of ABM droidboot aoi, and should not be callesd from droidboot code

@@ -79,3 +79,8 @@ void droidboot_platform_system_log(const char *buf)
 {
     droidboot_internal_platform_system_log(buf);
 }
+
+void droidboot_delay(unsigned int time)
+{
+    droidboot_internal_delay(time);
+}
