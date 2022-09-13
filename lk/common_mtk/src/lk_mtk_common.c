@@ -24,6 +24,7 @@
 
 bool metadata_fail;
 block_dev_desc_t *bdev;
+uint32_t last_pressed_key;
 
 void droidboot_internal_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p)
 {
@@ -56,22 +57,27 @@ void droidboot_internal_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * are
 //Read keys state
 bool droidboot_internal_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
 {
-    data->key = LV_KEY_PREV;
     if (mtk_detect_key(MT65XX_MENU_SELECT_KEY)){
-        data->state = LV_INDEV_STATE_PR;
-        return false; /*No buffering now so no more data read*/
+        data->key = LV_KEY_PREV;
+        last_pressed_key = LV_KEY_PREV;
+        data->state = LV_INDEV_STATE_PRESSED;
     } 
-    data->key = LV_KEY_NEXT;
-    if (mtk_detect_key(MT65XX_MENU_OK_KEY)){
-        data->state = LV_INDEV_STATE_PR;
-         return false; /*No buffering now so no more data read*/
+
+    else if (mtk_detect_key(MT65XX_MENU_OK_KEY)){
+        data->key = LV_KEY_NEXT;
+        last_pressed_key = LV_KEY_NEXT;
+        data->state = LV_INDEV_STATE_PRESSED;
     } 
-    data->key = LV_KEY_ENTER;
-    if (mtk_detect_key(MTK_PMIC_PWR_KEY)){
-        data->state = LV_INDEV_STATE_PR;
-         return false; /*No buffering now so no more data read*/
+    
+    else if (mtk_detect_key(MTK_PMIC_PWR_KEY)){
+        data->key = LV_KEY_ENTER;
+        last_pressed_key = LV_KEY_ENTER;
+        data->state = LV_INDEV_STATE_PRESSED;
     } 
-   
+    else {
+        data->key=last_pressed_key;
+        data->state = LV_INDEV_STATE_RELEASED;
+    }  
 }
 
 //Init SD card
