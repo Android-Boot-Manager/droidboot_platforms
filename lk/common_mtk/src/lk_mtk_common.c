@@ -185,6 +185,14 @@ void droidboot_internal_delay(unsigned int time)
     thread_sleep(time);
 }
 
+// fuction to boot linux from ram
+void droidboot_internal_boot_linux_from_ram(unsigned char *kernel_raw, off_t kernel_raw_size, unsigned char *ramdisk_raw, off_t ramdisk_size, char *options)
+{
+    cmdline_append(options);
+    // NOTE: next function is NOT a part of mtk-lk you should implement it yoursalf based on your boot_linux_from_storage
+	mtk_boot_linux_from_ram(kernel_raw, kernel_raw_size, ramdisk_raw, ramdisk_size);
+	
+}
 // Next functions implements gui functions used by target BOOTLOADER code, those are not part of ABM droidboot aoi, and should not be callesd from droidboot code
 int exit;
 static lv_obj_t* currentButton = NULL;

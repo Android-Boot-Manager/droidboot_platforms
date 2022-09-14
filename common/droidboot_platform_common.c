@@ -84,3 +84,8 @@ void droidboot_delay(unsigned int time)
 {
     droidboot_internal_delay(time);
 }
+
+void droidboot_platform_boot_linux_from_ram(unsigned char *kernel_raw, off_t kernel_raw_size, unsigned char *ramdisk_raw, off_t ramdisk_size, char *options)
+{
+    droidboot_internal_boot_linux_from_ram(kernel_raw, kernel_raw_size, ramdisk_raw, ramdisk_size, options);
+}
