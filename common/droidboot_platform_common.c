@@ -99,3 +99,8 @@ uint32_t droidboot_get_ramdisk_load_addr()
 {
     return droidboot_internal_get_ramdisk_load_addr();
 }
+
+bool droidboot_append_ramdisk_to_kernel()
+{
+    return droidboot_internal_append_ramdisk_to_kernel();
+}

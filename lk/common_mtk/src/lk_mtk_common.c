@@ -21,6 +21,7 @@
 #include <mmc_common_inter.h>
 #include <mmc_core.h>
 #include <kernel/thread.h>
+#include <mt_boot.h>
 
 bool metadata_fail;
 block_dev_desc_t *bdev;
@@ -201,7 +202,12 @@ uint32_t droidboot_internal_get_kernel_load_addr()
 
 uint32_t droidboot_internal_get_ramdisk_load_addr()
 {
-    return get_ramdisk_addr();
+    return NULL;
+}
+
+bool droidboot_internal_append_ramdisk_to_kernel()
+{
+    return true;
 }
 
 // Next functions implements gui functions used by target BOOTLOADER code, those are not part of ABM droidboot aoi, and should not be callesd from droidboot code
