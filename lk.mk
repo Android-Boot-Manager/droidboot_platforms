@@ -1,7 +1,7 @@
 DROIDBOOT_PLATFORM_LOCAL_PATH := $(GET_LOCAL_DIR)
 DROIDBOOT_PLATFORM ?= $(strip $(PLATFORM))
 
-LK_DEVICES := cedric yggdrasil yggdrasilx astroslide mimameid
+LK_DEVICES := cedric yggdrasil yggdrasilx astroslide mimameid cosmocom
 
 INCLUDES += $(DROIDBOOT_PLATFORM_LOCAL_PATH)/common
 OBJS += $(DROIDBOOT_PLATFORM_LOCAL_PATH)/common/droidboot_platform_common.o
