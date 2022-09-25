@@ -6,6 +6,12 @@
 #include <dev/fbcon.h>
 #include <kernel/thread.h>
 #include <lib/bio.h>
+#include <pm8x41.h>
+
+uint32_t last_pressed_key;
+
+extern uint32_t target_volume_up();
+extern uint32_t target_volume_down();
 
 void droidboot_internal_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p)
 {
@@ -40,7 +46,27 @@ int droidboot_get_display_width()
 //Read keys state
 bool droidboot_internal_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
 {
+    if (target_volume_up()){
+        data->key = LV_KEY_PREV;
+        last_pressed_key = LV_KEY_PREV;
+        data->state = LV_INDEV_STATE_PRESSED;
+    } 
 
+    else if (target_volume_down()){
+        data->key = LV_KEY_NEXT;
+        last_pressed_key = LV_KEY_NEXT;
+        data->state = LV_INDEV_STATE_PRESSED;
+    } 
+    
+    else if (pm8x41_get_pwrkey_is_pressed()){
+        data->key = LV_KEY_ENTER;
+        last_pressed_key = LV_KEY_ENTER;
+        data->state = LV_INDEV_STATE_PRESSED;
+    } 
+    else {
+        data->key=last_pressed_key;
+        data->state = LV_INDEV_STATE_RELEASED;
+    }
 }
 
 ssize_t dridboot_internal_sd_read_block(void *buf, uint32_t block, uint count)
