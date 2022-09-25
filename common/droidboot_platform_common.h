@@ -12,9 +12,8 @@
 #elif defined(PLATFORM_YGGDRASILX)
 #include <lk_mtk_common.h>
 #include <yggdrasilx.h>
-#elif defined(PLATFORM_CEDRIC)
-#include <lk_qcom_common.h>
-#include <yggdrasil.h>
+#elif defined(PLATFORM_QCOM)
+#include <lk_qcom.h>
 #elif defined(PLATFORM_PRO1)
 #include <droidboot_uefi_common.h>
 #include <common_abl.h>
