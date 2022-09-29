@@ -137,33 +137,6 @@ int droidboot_get_display_width()
     return DISP_GetScreenWidth();
 }
 
-// This function must not be here, as lvgl already have its own fs support, but it needs fseek and ftell wich are not supported by our fs driver, due to that fact we handle image loading ourself.
-struct lv_img_dsc_t* droidboot_mtk_load_image_from_fs(char* path){
-    /*int ret=0;
-    filehandle *entry_file_handle = NULL;
-    ret=fs_mount("/boot", "ext2", "mmc1p1");
-    
-    off_t entry_file_size = fs_get_file_size(path);
-    off_t header_len      = sizeof(lv_img_header_t);          // file header struct
-    off_t buf_len         = entry_file_size - header_len;     // file size minus header size*/
-    lv_img_dsc_t* img_dsc = malloc(sizeof(lv_img_dsc_t));     // image descriptor struct
-    /*unsigned char *buf    = malloc(buf_len);                  // pixel data only
-
-    ret=fs_open_file(path, &entry_file_handle);
-    if(ret!=0)
-        return NULL;
-
-    fs_read_file(entry_file_handle, img_dsc, 0, header_len);  // read header struct (first 4 bytes)
-    fs_read_file(entry_file_handle, buf , 0, buf_len);        // read pixel data (remainder)
-    fs_close_file(entry_file_handle);
-
-    img_dsc->data      = buf;
-    img_dsc->data_size = buf_len;
-    fs_unmount("/boot");*/
-    return img_dsc;
-}
-
-
 // Logging functions
 void droidboot_internal_platform_on_screen_log(const char *buf)
 {

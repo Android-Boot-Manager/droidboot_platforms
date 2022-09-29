@@ -24,9 +24,6 @@ void droidboot_mtk_sd_check();
 int droidboot_get_display_height();
 int droidboot_get_display_width();
 
-// HACK: image loading for lvgl in hacky manner
-struct lv_img_dsc_t* droidboot_mtk_load_image_from_fs(char* path);
-
 // Logging functions
 void droidboot_internal_platform_on_screen_log(const char *buf);
 void droidboot_internal_platform_system_log(const char *buf);
