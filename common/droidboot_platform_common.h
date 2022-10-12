@@ -57,7 +57,9 @@ void droidboot_platform_system_log(const char *buf);
 void droidboot_delay(unsigned int time);
 
 void droidboot_platform_boot_linux_from_ram(unsigned char *kernel_raw, off_t kernel_raw_size, unsigned char *ramdisk_raw, off_t ramdisk_size, unsigned char *dtb_raw, off_t dtb_raw_size, char *options);
+void droidboot_pre_ramdisk_load(unsigned char *kernel_raw, off_t kernel_raw_size);
 uint32_t droidboot_get_kernel_load_addr();
 uint32_t droidboot_get_ramdisk_load_addr();
 bool droidboot_append_ramdisk_to_kernel();
+uint32_t droidboot_get_dtb_load_addr();
 #endif

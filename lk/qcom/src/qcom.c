@@ -8,6 +8,10 @@
 #include <lib/bio.h>
 #include <pm8x41.h>
 
+#include <platform/iomap.h>
+#include <platform.h>
+#include <decompress.h>
+
 uint32_t last_pressed_key;
 
 extern uint32_t target_volume_up();
@@ -123,17 +127,41 @@ void droidboot_internal_delay(unsigned int time)
 // fuction to boot linux from ram
 void droidboot_internal_boot_linux_from_ram(unsigned char *kernel_raw, off_t kernel_raw_size, unsigned char *ramdisk_raw, off_t ramdisk_size, unsigned char *dtb_raw, off_t dtb_raw_size, char *options)
 {
-	
+	void *kernel_addr = VA((addr_t)(ABOOT_FORCE_KERNEL64_ADDR));
+    droidboot_log(DROIDBOOT_LOG_ERROR, "Going to boot linux\n");
+	boot_linux(VA((addr_t)(ABOOT_FORCE_KERNEL64_ADDR)), dtb_raw, options, board_machtype(), ramdisk_raw, ramdisk_size);
+    droidboot_log(DROIDBOOT_LOG_ERROR, "boot linux failed\n");
+	return -1; //something went wrong
+}
+
+void droidboot_internal_pre_ramdisk_load(unsigned char *kernel_raw, off_t kernel_raw_size)
+{
+    void *kernel_addr = VA((addr_t)(ABOOT_FORCE_KERNEL64_ADDR));
+    unsigned int dev_null;
+    if(is_gzip_package(kernel_raw, kernel_raw_size)) {
+		if(decompress(kernel_raw, kernel_raw_size, kernel_addr, ABOOT_FORCE_RAMDISK_ADDR - ABOOT_FORCE_KERNEL64_ADDR, &dev_null, &dev_null)){
+			droidboot_log(DROIDBOOT_LOG_ERROR, "kernel decompression failed\n");
+			return -1;
+		}
+		droidboot_log(DROIDBOOT_LOG_INFO, "kernel decompression OK\n");
+	} else {
+		memmove(kernel_addr, kernel_raw, kernel_raw_size);
+	}
 }
 
 uint32_t droidboot_internal_get_kernel_load_addr()
 {
-    return NULL;
+    return VA((addr_t)(ABOOT_FORCE_RAMDISK_ADDR));
 }
 
 uint32_t droidboot_internal_get_ramdisk_load_addr()
 {
-    return NULL;
+    return VA((addr_t)(ABOOT_FORCE_RAMDISK_ADDR));
+}
+
+uint32_t droidboot_internal_get_dtb_load_addr()
+{
+    return VA((addr_t)(ABOOT_FORCE_TAGS_ADDR));
 }
 
 bool droidboot_internal_append_ramdisk_to_kernel()

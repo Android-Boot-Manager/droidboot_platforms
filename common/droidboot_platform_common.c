@@ -95,6 +95,11 @@ void droidboot_platform_boot_linux_from_ram(unsigned char *kernel_raw, off_t ker
     droidboot_internal_boot_linux_from_ram(kernel_raw, kernel_raw_size, ramdisk_raw, ramdisk_size, dtb_raw, dtb_raw_size, options);
 }
 
+void droidboot_pre_ramdisk_load(unsigned char *kernel_raw, off_t kernel_raw_size)
+{
+    droidboot_internal_pre_ramdisk_load(kernel_raw, kernel_raw_size);
+}
+
 uint32_t droidboot_get_kernel_load_addr()
 {
     return droidboot_internal_get_kernel_load_addr();
@@ -103,6 +108,11 @@ uint32_t droidboot_get_kernel_load_addr()
 uint32_t droidboot_get_ramdisk_load_addr()
 {
     return droidboot_internal_get_ramdisk_load_addr();
+}
+
+uint32_t droidboot_get_dtb_load_addr()
+{
+    return droidboot_internal_get_dtb_load_addr();
 }
 
 bool droidboot_append_ramdisk_to_kernel()
