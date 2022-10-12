@@ -53,6 +53,11 @@ uint64_t droidboot_sd_blkcnt()
     return droidboot_internal_sd_blkcnt();
 }
 
+bool droidboot_sd_exists()
+{
+    return droidboot_internal_sd_exists();
+}
+
 
 int droidboot_get_disp_buffer_height()
 {

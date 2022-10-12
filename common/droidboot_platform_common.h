@@ -44,6 +44,7 @@ ssize_t dridboot_sd_read_block(void *buf, uint32_t block, uint count);
 ssize_t dridboot_sd_write_block(const void *buf, uint32_t block, uint count);
 uint32_t droidboot_sd_blklen();
 uint64_t droidboot_sd_blkcnt();
+bool droidboot_sd_exists();
 
 int droidboot_get_disp_buffer_height();
 bool droidboot_use_double_buffering();

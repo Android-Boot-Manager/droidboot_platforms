@@ -93,6 +93,11 @@ uint64_t droidboot_internal_sd_blkcnt()
     return lk_bdev->block_count;
 }
 
+bool droidboot_internal_sd_exists()
+{
+    return bio_open("hd2")!=NULL;
+}
+
 // Logging functions
 void droidboot_internal_platform_on_screen_log(const char *buf)
 {

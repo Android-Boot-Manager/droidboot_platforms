@@ -111,19 +111,15 @@ uint64_t droidboot_internal_sd_blkcnt()
     return card->nblks;
 }
 
-void droidboot_mtk_sd_check()
+bool droidboot_internal_sd_exists()
 {
-    // This function is not part of mtk-lk as it dose not support SD card ootb, so it must be implemented in lk.
-    /*init_sd_card();
-    
-    int ret = fs_mount("/boot", "ext2", "mmc1p1"); //try to mount abm_settings
-	if(ret != 0){
-	    return false;
-	}
-	else{
-	    fs_unmount("/boot");
-	    return true;
-	}*/
+    struct mmc_card *card;
+    card=mmc_get_card(1);
+    if(card==NULL)
+        return false;
+    if(card->nblks<=0)
+        return false;
+    return true;
 }
 
 // Get screen height and width
