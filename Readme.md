@@ -5,10 +5,14 @@ This repo contains code written in C wich is compiled together with some kind of
 universal functions for droidboot GUI implementing them using platfor specific functions.
 
 ## Status  
-Not yet working in active development
+Working, in active development
 
 ## Supported platforms
 For now we target:
 - mt6763 (yggdrasil and yggdrasilx)
 - sdm845 unfused (pro1)
 - sdm845 fused (op6 and evrything else supported by renegade)
+
+Already working:
+- mt6763 (yggdrasilx)
+- most SoCs supported by lk2nd
