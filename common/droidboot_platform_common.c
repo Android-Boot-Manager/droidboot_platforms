@@ -119,3 +119,8 @@ bool droidboot_append_ramdisk_to_kernel()
 {
     return droidboot_internal_append_ramdisk_to_kernel();
 }
+
+void droidboot_platform_tasks()
+{
+    droidboot_internal_platform_tasks();
+}

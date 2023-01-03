@@ -64,4 +64,6 @@ uint32_t droidboot_get_kernel_load_addr(void);
 uint32_t droidboot_get_ramdisk_load_addr(void);
 bool droidboot_append_ramdisk_to_kernel(void);
 uint32_t droidboot_get_dtb_load_addr(void);
+
+void droidboot_platform_tasks();
 #endif
