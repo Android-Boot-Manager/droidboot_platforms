@@ -3,8 +3,8 @@ DROIDBOOT_PLATFORM ?= $(strip $(PLATFORM))
 
 LK_DEVICES := qcom yggdrasil yggdrasilx astroslide mimameid cosmocom
 
-INCLUDES += $(DROIDBOOT_PLATFORM_LOCAL_PATH)/common
-INCLUDES += $(DROIDBOOT_PLATFORM_LOCAL_PATH)/libc-hack
+INCLUDES += -I$(DROIDBOOT_PLATFORM_LOCAL_PATH)/common
+INCLUDES += -I$(DROIDBOOT_PLATFORM_LOCAL_PATH)/libc-hack
 OBJS += $(DROIDBOOT_PLATFORM_LOCAL_PATH)/common/droidboot_platform_common.o
 
 ifeq (,$(DROIDBOOT_PLATFORM))

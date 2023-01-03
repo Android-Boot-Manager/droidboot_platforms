@@ -33,3 +33,9 @@ void droidboot_internal_lvgl_threads_init()
     thread_resume(lvgl_thr2);
 }
 
+// Nothing to do here, we have threads
+void droidboot_internal_platform_tasks()
+{
+  thread_sleep(200);
+}
+
