@@ -1,0 +1,17 @@
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = common_linuxloader
+  FILE_GUID                      = 68A46731-45B0-4390-9684-AB736070B086
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = common_linuxloader
+
+[Packages]
+  MdePkg/MdePkg.dec
+  droidboot.dec
+
+[LibraryClasses]
+  UefiLib
+
+[Sources]
+  common_linuxloader.c
