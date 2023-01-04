@@ -20,6 +20,8 @@
 
 struct udevice *dev_fb;
 struct udevice *dev_mmc;
+struct stdio_dev *dev_stdio;
+uint32_t last_pressed_key;
 
 droidboot_error droidboot_internal_platform_init()
 {
@@ -44,6 +46,22 @@ droidboot_error droidboot_internal_platform_init()
 			struct blk_desc *upriv =dev_get_uclass_plat(dev);
             dev_mmc=dev;
 			droidboot_log(DROIDBOOT_LOG_INFO,"BLK device, type: %s, blocks count: %d, block size: %d is active\n", upriv->type, upriv->lba, upriv->blksz);
+		}
+	}
+
+	int l;
+	struct list_head *list = stdio_get_list();
+	struct list_head *pos;
+	struct stdio_dev *stdio_dev;
+
+	list_for_each(pos, list) {
+		stdio_dev = list_entry(pos, struct stdio_dev, list);
+		for (l = 0; l < MAX_FILES; l++) {
+			if (stdio_devices[l] == stdio_dev) {
+                if(stdio_names[l]=="stdin")
+                    droidboot_log(DROIDBOOT_LOG_INFO,"Found stdin dev\n");
+                    dev_stdio=stdio_dev;
+			}
 		}
 	}
 
@@ -89,20 +107,43 @@ void droidboot_internal_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * are
 int droidboot_get_display_height()
 {
     struct video_priv *upriv = dev_get_uclass_priv(dev_fb);
-    droidboot_log(DROIDBOOT_LOG_TRACE, "droidboot_internal_fb_flush was called");
+    droidboot_log(DROIDBOOT_LOG_TRACE, "droidboot height is: %d\n", (int32_t)upriv->xsize);
     return (int32_t)upriv->ysize;
 }
 
 int droidboot_get_display_width()
 {
     struct video_priv *upriv = dev_get_uclass_priv(dev_fb);
-    droidboot_log(DROIDBOOT_LOG_TRACE, "droidboot width is: %d", (int32_t)upriv->xsize);
+    droidboot_log(DROIDBOOT_LOG_TRACE, "droidboot width is: %d\n", (int32_t)upriv->xsize);
     return (int32_t)upriv->xsize;
 }
 
 //Read keys state
 bool droidboot_internal_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
 {
+    if(dev_stdio->tstc(dev_stdio)){
+        if (dev_stdio->getc(dev_stdio)==65){
+            data->key = LV_KEY_PREV;
+            last_pressed_key = LV_KEY_PREV;
+            data->state = LV_INDEV_STATE_PRESSED;
+        }
+
+        else if (dev_stdio->getc(dev_stdio)==66){
+            data->key = LV_KEY_NEXT;
+            last_pressed_key = LV_KEY_NEXT;
+            data->state = LV_INDEV_STATE_PRESSED;
+        }
+
+        else if (dev_stdio->getc(dev_stdio)==13){
+            data->key = LV_KEY_ENTER;
+            last_pressed_key = LV_KEY_ENTER;
+            data->state = LV_INDEV_STATE_PRESSED;
+        }
+        else {
+            data->key=last_pressed_key;
+            data->state = LV_INDEV_STATE_RELEASED;
+        }
+    }
     return false;
 }
 
@@ -151,12 +192,6 @@ void droidboot_internal_delay(unsigned int time)
     mdelay(time);
 }
 
-// fuction to boot linux from ram
-void droidboot_internal_boot_linux_from_ram(unsigned char *kernel_raw, off_t kernel_raw_size, unsigned char *ramdisk_raw, off_t ramdisk_size, unsigned char *dtb_raw, off_t dtb_raw_size, char *options)
-{
-	return -1; //something went wrong
-}
-
 void droidboot_internal_pre_ramdisk_load(unsigned char *kernel_raw, off_t kernel_raw_size)
 {
 
@@ -164,17 +199,33 @@ void droidboot_internal_pre_ramdisk_load(unsigned char *kernel_raw, off_t kernel
 
 uint32_t droidboot_internal_get_kernel_load_addr()
 {
-    return NULL;
+    return env_get_ulong("kernel_addr_r", 16, 0);
 }
 
 uint32_t droidboot_internal_get_ramdisk_load_addr()
 {
-    return NULL;
+    return env_get_ulong("ramdisk_addr_r", 16, 0);
 }
 
 uint32_t droidboot_internal_get_dtb_load_addr()
 {
-    return NULL;
+    return env_get_ulong("fdt_addr_r", 16, 0);
+}
+
+
+// fuction to boot linux from ram
+void droidboot_internal_boot_linux_from_ram(unsigned char *kernel_raw, off_t kernel_raw_size, unsigned char *ramdisk_raw, off_t ramdisk_size, unsigned char *dtb_raw, off_t dtb_raw_size, char *options)
+{
+    env_set("bootargs", options);
+    env_set("kernel_comp_addr_r", droidboot_internal_get_kernel_load_addr()+kernel_raw_size);
+    env_set("kernel_comp_size", kernel_raw_size);
+    env_set("bootargs", options);
+    char *argv[4] = {"booti", kernel_raw, ramdisk_raw, dtb_raw};
+    struct cmd_tbl cmdtb;
+    cmdtb.name="booti";
+    cmdtb.maxargs=255;
+    do_booti(&cmdtb, 0, 4, argv);
+	return -1; //something went wrong
 }
 
 bool droidboot_internal_append_ramdisk_to_kernel()
