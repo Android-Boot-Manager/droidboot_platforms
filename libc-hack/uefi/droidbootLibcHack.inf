@@ -1,0 +1,102 @@
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = droidbootLibcHack
+  FILE_GUID                      = 732370B3-6518-4366-8644-94B809B0332C
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = droidbootLibcHack
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -Wno-missing-braces -Wno-sign-compare
+
+[Packages]
+  MdePkg/MdePkg.dec
+  droidboot.dec
+
+[Sources]
+  errno.c
+  str.c
+  mem.c
+  __rem_pio2.c
+  __rem_pio2f.c
+  __rem_pio2_large.c
+  cos.c
+  tan.c
+  sin.c
+  ceil.c
+  fabs.c
+  floor.c
+  sqrt.c
+  scalbn.c
+  pow.c
+  pow_data.c
+  exp_data.c
+  log_data.c
+  log2_data.c
+  malloc.c
+  exit.c
+  number.c
+  stub.c
+  qsort.c
+  ctype.c
+  fvwrite.c
+  vfprintf.c
+  vasprintf.c
+  vsnprintf.c
+  snprintf.c
+  sprintf.c
+  fflush.c
+  gdtoa.c
+  dtoa.c
+  misc.c
+  dmisc.c
+  gmisc.c
+  strerror.c
+  wsetup.c
+  vfscanf.c
+  sscanf.c
+  strtoimax.c
+  strtoumax.c
+  strtof.c
+  strtod.c
+  strtopx.c
+  strtodg.c
+  strtold_subr.c
+  refill.c
+  findfp.c
+  ulp.c
+  smisc.c
+  ungetc.c
+  makebuf.c
+  fread.c
+  time.c
+  strftime.c
+  zone.c
+  sum.c
+  localeconv.c
+  rand.c
+  strcspn.c
+  atan.c
+  asin.c
+  acos.c
+  ceil.c
+  fmod.c
+  modf.c
+  exp.c
+  expm1.c
+  log.c
+  log2.c
+  log10.c
+  frexp.c
+  ldexp.c
+  abs.c
+  __expo2.c
+  iconv.c
+  wctomb.c
+  wcrtomb.c
+  mbtowc.c
+  mbrtowc.c
+  mb.c
+
+[Sources.AARCH64]
+  aarch64/lse.S

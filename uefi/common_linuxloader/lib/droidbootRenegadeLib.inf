@@ -1,0 +1,28 @@
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = droidbootRenegadeLib
+  FILE_GUID                      = 917BCB1D-3837-40DD-83EC-7596566893FC
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = droidbootRenegadeLib
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  droidboot.dec
+
+[LibraryClasses]
+  FdtLib
+  droidbootLibcHack
+
+[Guids]
+  gdroidbootFileGuid
+
+[Sources]
+  uefi.c
+  list.c
+  keyval.c
+  strings.c
+  fdtparser.c
+  param.c

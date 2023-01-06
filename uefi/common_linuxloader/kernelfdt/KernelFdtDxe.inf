@@ -6,18 +6,16 @@
   VERSION_STRING                 = 1.0
   ENTRY_POINT                    = KernelFdtMain
 
-[BuildOptions]
-  GCC:*_*_*_CC_FLAGS = -include src/config-uefi.h
-
 [Packages]
   MdePkg/MdePkg.dec
-  SimpleInit.dec
+  droidboot.dec
 
 [LibraryClasses]
   UefiLib
   DebugLib
   UefiDriverEntryPoint
-  SimpleInitLib
+  droidbootLibcHack
+  droidbootRenegadeLib
 
 [Sources]
   KernelFdtDxe.c

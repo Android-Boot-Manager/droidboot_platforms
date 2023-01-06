@@ -33,10 +33,12 @@
 #include <cosmocom.h>
 #elif defined(PLATFORM_UBOOT)
 #include <u-boot.h>
+#elif defined(PLATFORM_RENEGADE)
+#include <droidboot_uefi_common.h>
 #endif
 
 void droidboot_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
-bool droidboot_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data);
+void droidboot_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data);
 
 int droidboot_platform_settings_dev_open(struct ext4_blockdev *bdev);
 int droidboot_platform_settings_dev_close(struct ext4_blockdev *bdev);

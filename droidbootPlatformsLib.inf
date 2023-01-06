@@ -1,0 +1,22 @@
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = droidbootPlatformsLib
+  FILE_GUID                      = 32916A03-F631-4A2E-9C9F-0EB0FB414DF5
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = droidbootPlatformsLib
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -DPLATFORM_RENEGADE
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  droidboot.dec
+
+[Sources]
+  uefi/common/droidboot_uefi_common.c
+  common/droidboot_platform_common.c
+
+
