@@ -7,7 +7,7 @@
   LIBRARY_CLASS                  = droidbootPlatformsLib
 
 [BuildOptions]
-  GCC:*_*_*_CC_FLAGS = -DPLATFORM_RENEGADE
+  GCC:*_*_*_CC_FLAGS = -DPLATFORM_RENEGADE -DPLATFORM_UEFI
 
 [Packages]
   MdePkg/MdePkg.dec
@@ -20,3 +20,5 @@
   common/droidboot_platform_common.c
 
 
+[Protocols]
+  gEfiBlockIoProtocolGuid                       # PROTOCOL CONSUMES

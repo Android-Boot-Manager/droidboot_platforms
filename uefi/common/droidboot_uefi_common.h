@@ -1,7 +1,10 @@
 #pragma once
+#include  <Uefi.h>
 #include <lvgl.h>
 #include <droidboot_drivers.h>
 #include <droidboot_logging.h>
+
+extern EFI_BOOT_SERVICES             *gBS1;
 
 droidboot_error droidboot_internal_platform_init(void);
 

@@ -1,0 +1,42 @@
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = UefiWrapper
+  FILE_GUID                      = 6B00AFFC-6398-46C4-AFB5-6625E34C6F82
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = UefiMain
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  droidboot.dec
+
+[LibraryClasses]
+  DebugLib
+  UefiBootManagerLib
+  ReportStatusCodeLib
+  droidbootLib
+  UefiApplicationEntryPoint
+  droidbootPlatformsLib
+
+[Guids]
+  gdroidbootFileGuid
+  gEfiMemoryTypeInformationGuid
+  gEfiDebugImageInfoTableGuid
+  gEfiAcpiTableGuid
+  gEfiDebugImageInfoTableGuid
+  gEfiGlobalVariableGuid
+  gEfiHobListGuid
+  gEfiMemoryAttributesTableGuid
+  gEfiGraphicsInfoHobGuid
+  gEfiGraphicsDeviceInfoHobGuid
+  gEfiSystemResourceTableGuid
+  gEfiMdePkgTokenSpaceGuid
+  gEfiSmbiosTableGuid
+  gEfiFileInfoGuid
+  gEfiVariableIndexTableGuid
+  gEfiDxeServicesTableGuid
+  gEfiCrc32GuidedSectionExtractionGuid
+
+[Sources]
+  uefi-wrapper.c
