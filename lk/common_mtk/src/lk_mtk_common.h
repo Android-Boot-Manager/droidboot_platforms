@@ -21,8 +21,8 @@ bool droidboot_internal_sd_exists()
 void droidboot_mtk_sd_check();
 
 // Get screen height and width
-int droidboot_get_display_height();
-int droidboot_get_display_width();
+int droidboot_internal_get_display_height();
+int droidboot_internal_get_display_width();
 
 // Logging functions
 void droidboot_internal_platform_on_screen_log(const char *buf);

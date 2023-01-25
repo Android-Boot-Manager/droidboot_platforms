@@ -39,6 +39,8 @@
 #endif
 
 void droidboot_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
+int droidboot_get_display_height();
+int droidboot_get_display_width();
 void droidboot_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data);
 
 int droidboot_platform_settings_dev_open(struct ext4_blockdev *bdev);

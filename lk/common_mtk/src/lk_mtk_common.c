@@ -123,12 +123,12 @@ bool droidboot_internal_sd_exists()
 }
 
 // Get screen height and width
-int droidboot_get_display_height()
+int droidboot_internal_get_display_height()
 {
     return DISP_GetScreenHeight();
 }
 
-int droidboot_get_display_width()
+int droidboot_internal_get_display_width()
 {
     return DISP_GetScreenWidth();
 }

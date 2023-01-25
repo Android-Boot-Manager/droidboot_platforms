@@ -14,9 +14,8 @@ void droidboot_internal_lvgl_threads_init(void);
 void droidboot_internal_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
 
 // Get screen height and width
-int droidboot_get_display_height(void);
-
-int droidboot_get_display_width(void);
+int droidboot_internal_get_display_height(void);
+int droidboot_internal_get_display_width(void);
 
 //Read keys state
 bool droidboot_internal_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data);

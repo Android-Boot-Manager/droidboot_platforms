@@ -104,14 +104,14 @@ void droidboot_internal_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * are
 }
 
 // Get screen height and width
-int droidboot_get_display_height()
+int droidboot_internal_get_display_height()
 {
     struct video_priv *upriv = dev_get_uclass_priv(dev_fb);
     droidboot_log(DROIDBOOT_LOG_TRACE, "droidboot height is: %d\n", (int32_t)upriv->xsize);
     return (int32_t)upriv->ysize;
 }
 
-int droidboot_get_display_width()
+int droidboot_internal_get_display_width()
 {
     struct video_priv *upriv = dev_get_uclass_priv(dev_fb);
     droidboot_log(DROIDBOOT_LOG_TRACE, "droidboot width is: %d\n", (int32_t)upriv->xsize);

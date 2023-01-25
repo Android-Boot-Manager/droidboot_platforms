@@ -5,6 +5,15 @@ void droidboot_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_col
     droidboot_internal_fb_flush(disp_drv, area, color_p);
 }
 
+int droidboot_get_display_height()
+{
+    return droidboot_internal_get_display_height();
+}
+
+int droidboot_get_display_width()
+{
+    return droidboot_internal_get_display_width();
+}
 
 void droidboot_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
 {
