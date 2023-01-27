@@ -1,0 +1,75 @@
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = DroidbootInitBootLinux
+  FILE_GUID                      = 5FC747B2-B1E7-43DA-94B0-05B67A6ECC51
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = SimpleInitBootLinux
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  CryptoPkg/CryptoPkg.dec
+  droidboot.dec
+
+[Packages.ARM, Packages.AARCH64]
+  ArmPkg/ArmPkg.dec
+
+[LibraryClasses.ARM, LibraryClasses.AARCH64]
+  ArmLib
+  ArmGicLib
+  CacheMaintenanceLib
+
+[LibraryClasses]
+  PcdLib
+  UefiLib
+  BaseLib
+  DebugLib
+  BaseMemoryLib
+  DevicePathLib
+  MemoryAllocationLib
+  UefiBootManagerLib
+  UefiBootServicesTableLib
+  UefiRuntimeServicesTableLib
+  ReportStatusCodeLib
+  SimpleInitLib
+  SimpleInitCompress
+  SimpleInitConfd
+  SimpleInitLoggerd
+  Zlib
+
+[Pcd]
+  gdroidbootTokenSpaceGuid.PcdBootCustomLoadAddress
+  gdroidbootTokenSpaceGuid.PcdBootLoadAddressStart
+  gdroidbootTokenSpaceGuid.PcdBootLoadAddressEnd
+  gdroidbootTokenSpaceGuid.PcdBootKernelAddressStart
+  gdroidbootTokenSpaceGuid.PcdBootKernelAddressEnd
+  gdroidbootTokenSpaceGuid.PcdBootRamdiskAddressStart
+  gdroidbootTokenSpaceGuid.PcdBootRamdiskAddressEnd
+  gdroidbootTokenSpaceGuid.PcdBootFdtAddressStart
+  gdroidbootTokenSpaceGuid.PcdBootFdtAddressEnd
+
+[Pcd.AARCH64]
+  gArmTokenSpaceGuid.PcdGicDistributorBase
+  gArmTokenSpaceGuid.PcdGicSgiIntId
+
+[Guids]
+  gFdtTableGuid
+  gEfiFileInfoGuid
+  gEfiFileSystemVolumeLabelInfoIdGuid
+  gLinuxEfiRandomSeedTableGuid
+
+[Protocols]
+  gEfiChipInfoProtocolGuid
+  gEfiPlatformInfoProtocolGuid
+  gEfiRamPartitionProtocolGuid
+  gEfiDDRGetInfoProtocolGuid
+  gEfiLoadedImageProtocolGuid
+  gEfiPartitionInfoProtocolGuid
+  gEfiSimpleFileSystemProtocolGuid
+  gEfiRngProtocolGuid
+  gKernelFdtProtocolGuid
+
+[Sources]
+  arm.c
