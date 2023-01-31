@@ -118,8 +118,8 @@ void droidboot_internal_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
 
     //Vol up
     if (Key.ScanCode==SCAN_UP){
-        data->key = LV_KEY_PREV;
-        last_pressed_key = LV_KEY_PREV;
+        data->key = LV_KEY_ENTER;
+        last_pressed_key = LV_KEY_ENTER;
         data->state = LV_INDEV_STATE_PRESSED;
     }
 
@@ -132,8 +132,8 @@ void droidboot_internal_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
 
     //Pwr key
     else if (Key.ScanCode==SCAN_SUSPEND){
-        data->key = LV_KEY_ENTER;
-        last_pressed_key = LV_KEY_ENTER;
+       data->key = LV_KEY_PREV;
+        last_pressed_key = LV_KEY_PREV;
         data->state = LV_INDEV_STATE_PRESSED;
     }
     else {
@@ -176,7 +176,7 @@ void droidboot_internal_platform_on_screen_log(const char *buf)
 
 void droidboot_internal_platform_system_log(const char *buf)
 {
-   AsciiPrint(buf);
+   DEBUG((EFI_D_ERROR,buf));
 }
 
 void droidboot_internal_delay(unsigned int time)
@@ -184,31 +184,24 @@ void droidboot_internal_delay(unsigned int time)
     gBS1->Stall (time*1000);
 }
 
-void droidboot_internal_pre_ramdisk_load(unsigned char *kernel_raw, off_t kernel_raw_size)
+void droidboot_internal_pre_ramdisk_load(void *kernel_raw, off_t kernel_raw_size)
 {
 
 }
 
-uint32_t droidboot_internal_get_kernel_load_addr()
+void *droidboot_internal_get_kernel_load_addr()
 {
     return 0;
 }
 
-uint32_t droidboot_internal_get_ramdisk_load_addr()
+void *droidboot_internal_get_ramdisk_load_addr()
 {
     return 0;
 }
 
-uint32_t droidboot_internal_get_dtb_load_addr()
+void *droidboot_internal_get_dtb_load_addr()
 {
-    return 0;
-}
-
-
-// fuction to boot linux from ram
-void droidboot_internal_boot_linux_from_ram(unsigned char *kernel_raw, off_t kernel_raw_size, unsigned char *ramdisk_raw, off_t ramdisk_size, unsigned char *dtb_raw, off_t dtb_raw_size, char *options)
-{
-
+    return (void *)1;
 }
 
 bool droidboot_internal_append_ramdisk_to_kernel()

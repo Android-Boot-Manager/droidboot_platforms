@@ -125,7 +125,7 @@ void droidboot_internal_delay(unsigned int time)
 }
 
 // fuction to boot linux from ram
-void droidboot_internal_boot_linux_from_ram(unsigned char *kernel_raw, off_t kernel_raw_size, unsigned char *ramdisk_raw, off_t ramdisk_size, unsigned char *dtb_raw, off_t dtb_raw_size, char *options)
+void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_size, void *ramdisk_raw, off_t ramdisk_size, void *dtb_raw, off_t dtb_raw_size, char *options)
 {
 	void *kernel_addr = VA((addr_t)(ABOOT_FORCE_KERNEL64_ADDR));
     droidboot_log(DROIDBOOT_LOG_ERROR, "Going to boot linux\n");
@@ -134,7 +134,7 @@ void droidboot_internal_boot_linux_from_ram(unsigned char *kernel_raw, off_t ker
 	return -1; //something went wrong
 }
 
-void droidboot_internal_pre_ramdisk_load(unsigned char *kernel_raw, off_t kernel_raw_size)
+void droidboot_internal_pre_ramdisk_load(void *kernel_raw, off_t kernel_raw_size)
 {
     void *kernel_addr = VA((addr_t)(ABOOT_FORCE_KERNEL64_ADDR));
     unsigned int dev_null;
@@ -149,17 +149,17 @@ void droidboot_internal_pre_ramdisk_load(unsigned char *kernel_raw, off_t kernel
 	}
 }
 
-uint32_t droidboot_internal_get_kernel_load_addr()
+void *droidboot_internal_get_kernel_load_addr()
 {
     return VA((addr_t)(ABOOT_FORCE_RAMDISK_ADDR));
 }
 
-uint32_t droidboot_internal_get_ramdisk_load_addr()
+void *droidboot_internal_get_ramdisk_load_addr()
 {
     return VA((addr_t)(ABOOT_FORCE_RAMDISK_ADDR));
 }
 
-uint32_t droidboot_internal_get_dtb_load_addr()
+void *droidboot_internal_get_dtb_load_addr()
 {
     return VA((addr_t)(ABOOT_FORCE_TAGS_ADDR));
 }

@@ -31,12 +31,12 @@ void droidboot_internal_platform_system_log(const char *buf);
 droidboot_error droidboot_internal_platform_init();
 
 // fuction to boot linux from ram
-void droidboot_internal_boot_linux_from_ram(unsigned char *kernel_raw, off_t kernel_raw_size, unsigned char *ramdisk_raw, off_t ramdisk_size, unsigned char *dtb_raw, off_t dtb_raw_size, char *options);
-void droidboot_internal_pre_ramdisk_load(unsigned char *kernel_raw, off_t kernel_raw_size);
-uint32_t droidboot_internal_get_kernel_load_addr();
-uint32_t droidboot_internal_get_ramdisk_load_addr();
+void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_size, void *ramdisk_raw, off_t ramdisk_size, void *dtb_raw, off_t dtb_raw_size, char *options);
+void droidboot_internal_pre_ramdisk_load(void *kernel_raw, off_t kernel_raw_size);
+void *droidboot_internal_get_kernel_load_addr();
+void *droidboot_internal_get_ramdisk_load_addr();
 bool droidboot_internal_append_ramdisk_to_kernel();
-uint32_t droidboot_internal_get_dtb_load_addr();
+void *droidboot_internal_get_dtb_load_addr();
 
 // Next functions implements gui functions used by target BOOTLOADER code, those are not part of ABM droidboot aoi, and should not be callesd from droidboot code
 int droidboot_mtk_show_boot_mode_menu();

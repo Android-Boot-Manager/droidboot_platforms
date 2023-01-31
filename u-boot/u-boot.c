@@ -192,29 +192,29 @@ void droidboot_internal_delay(unsigned int time)
     mdelay(time);
 }
 
-void droidboot_internal_pre_ramdisk_load(unsigned char *kernel_raw, off_t kernel_raw_size)
+void droidboot_internal_pre_ramdisk_load(void *kernel_raw, off_t kernel_raw_size)
 {
 
 }
 
-uint32_t droidboot_internal_get_kernel_load_addr()
+void *droidboot_internal_get_kernel_load_addr()
 {
     return env_get_ulong("kernel_addr_r", 16, 0);
 }
 
-uint32_t droidboot_internal_get_ramdisk_load_addr()
+void *droidboot_internal_get_ramdisk_load_addr()
 {
     return env_get_ulong("ramdisk_addr_r", 16, 0);
 }
 
-uint32_t droidboot_internal_get_dtb_load_addr()
+void *droidboot_internal_get_dtb_load_addr()
 {
     return env_get_ulong("fdt_addr_r", 16, 0);
 }
 
 
 // fuction to boot linux from ram
-void droidboot_internal_boot_linux_from_ram(unsigned char *kernel_raw, off_t kernel_raw_size, unsigned char *ramdisk_raw, off_t ramdisk_size, unsigned char *dtb_raw, off_t dtb_raw_size, char *options)
+void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_size, void *ramdisk_raw, off_t ramdisk_size, void *dtb_raw, off_t dtb_raw_size, char *options)
 {
     env_set("bootargs", options);
     env_set("kernel_comp_addr_r", droidboot_internal_get_kernel_load_addr()+kernel_raw_size);

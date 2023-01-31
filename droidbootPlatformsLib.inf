@@ -15,8 +15,32 @@
   EmbeddedPkg/EmbeddedPkg.dec
   droidboot.dec
 
+[Packages.ARM, Packages.AARCH64]
+  ArmPkg/ArmPkg.dec
+
+[LibraryClasses.ARM, LibraryClasses.AARCH64]
+  ArmLib
+  ArmGicLib
+  CacheMaintenanceLib
+
+[LibraryClasses]
+  PcdLib
+  UefiLib
+  BaseLib
+  DebugLib
+  BaseMemoryLib
+  DevicePathLib
+  MemoryAllocationLib
+  UefiBootManagerLib
+  UefiBootServicesTableLib
+  UefiRuntimeServicesTableLib
+  ReportStatusCodeLib
+  droidbootLib
+
 [Sources]
   uefi/common/droidboot_uefi_common.c
+  uefi/common_linuxloader/common_linuxloader.c
+  uefi/common_linuxloader/linux-boot/arm.c
   common/droidboot_platform_common.c
 
 

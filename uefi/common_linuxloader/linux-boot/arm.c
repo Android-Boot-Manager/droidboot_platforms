@@ -63,7 +63,7 @@ typedef union linux_kernel_main{
 #define MAGIC_DTBO         0x1EABB7D7
 #define MAGIC_KERNEL_ARM32 0x016f2818
 #define MAGIC_KERNEL_ARM64 0x644d5241
-
+const char*size_units[]={"B","KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB",NULL};
 static VOID EFIAPI ArmInvalidateDataCacheInternal(VOID){
 	// FUCK ASSERT
 	ArmDataSynchronizationBarrier();
@@ -74,6 +74,17 @@ static VOID EFIAPI ArmCleanDataCacheInternal(VOID){
 	// FUCK ASSERT
 	ArmDataSynchronizationBarrier();
 	DataCacheOperation(ArmCleanDataCacheEntryBySetWay);
+}
+
+const char*make_readable_str_buf(char*buf,size_t len,unsigned long long val,unsigned long block_size,unsigned long display){
+	int unit=0;
+	memset(buf,0,len);
+	if(val==0)return strncpy(buf,"0",len-1);
+	if(block_size>1)val*=block_size;
+	if(display)val+=display/2,val/=display;
+	else while((val>=1024))val/=1024,unit++;
+	snprintf(buf,len-1,"%llu %s",val,size_units[unit]);
+	return buf;
 }
 
 static void platform_cleanup(){
@@ -95,7 +106,7 @@ static void exit_boot_services(void){
 	EFI_MEMORY_DESCRIPTOR *map=NULL;
 	UINTN size=0,pages=0,mk,ds;
 
-	DEBUG((EFI_D_INFO,"boot: shutdown uefi boot services...\n"));
+	DEBUG((EFI_D_ERROR,"boot: shutdown uefi boot services...\n"));
 	do{
 		st=gBS->GetMemoryMap(&size,map,&mk,&ds,&dv);
 		if(st==EFI_BUFFER_TOO_SMALL){
@@ -115,7 +126,7 @@ static void exit_boot_services(void){
 	}while(EFI_ERROR(st));
 }
 
-int boot_linux_arm(unsigned char *kernel_raw, off_t kernel_raw_size, unsigned char *ramdisk_raw, off_t ramdisk_size, unsigned char *dtb_raw, off_t dtb_raw_size){
+int boot_linux_arm(void *kernel_raw, off_t kernel_raw_size, void *dtb_raw, off_t dtb_raw_size){
 	linux_kernel_main main;
 
 	if(dtb_raw_size>MAX_DTB_SIZE){
@@ -127,7 +138,7 @@ int boot_linux_arm(unsigned char *kernel_raw, off_t kernel_raw_size, unsigned ch
 		return -1;
 	}
 
-	droidboot_log(DROIDBOOT_LOG_TRACE,"kernel main at 0x%llx",(unsigned long long)(UINTN)kernel_raw);
+	droidboot_log(DROIDBOOT_LOG_TRACE,"kernel main at 0x%llx\n",(unsigned long long)(UINTN)kernel_raw);
 
 	EfiSignalEventReadyToBoot();
 	REPORT_STATUS_CODE(
@@ -137,13 +148,14 @@ int boot_linux_arm(unsigned char *kernel_raw, off_t kernel_raw_size, unsigned ch
 		)
 	);
 
-	droidboot_log(DROIDBOOT_LOG_INFO,"prepare platform for arm linux boot...");
+	droidboot_log(DROIDBOOT_LOG_INFO,"prepare platform for arm linux boot...\n");
 	exit_boot_services();
+	droidboot_log(DROIDBOOT_LOG_TRACE,"exit boot services done\n");
 	platform_cleanup();
-
+	droidboot_log(DROIDBOOT_LOG_TRACE,"platform cleanup done\n");
 	// FIXME: cannot boot qualcomm android kernel now
 	main.pointer=kernel_raw;
-	DEBUG((EFI_D_INFO,"boot: run arm linux kernel main at 0x%llx\n",main.address));
+	DEBUG((EFI_D_ERROR,"boot: run arm linux kernel main at 0x%llx\n",main.address));
 	main.arm64((UINTN)dtb_raw,0,0,0);
 
 	DEBUG((EFI_D_ERROR,"Boot Failed\n"));

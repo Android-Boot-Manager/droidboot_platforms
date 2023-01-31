@@ -26,3 +26,4 @@
   strings.c
   fdtparser.c
   param.c
+  readable.c
