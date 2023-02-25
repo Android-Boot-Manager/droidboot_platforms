@@ -31,6 +31,9 @@
 #elif defined(PLATFORM_COSMOCOM)
 #include <lk_mtk_common.h>
 #include <cosmocom.h>
+#elif defined(PLATFORM_GX4)
+#include <lk_mtk2_common.h>
+#include <GX4.h>
 #elif defined(PLATFORM_UBOOT)
 #include <u-boot.h>
 #elif defined(PLATFORM_RENEGADE)
