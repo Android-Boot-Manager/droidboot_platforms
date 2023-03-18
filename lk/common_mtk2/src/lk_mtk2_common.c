@@ -36,19 +36,19 @@ void droidboot_internal_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * are
 //Read keys state
 bool droidboot_internal_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
 {
-    if (mtk_detect_key(MENU_SELECT_KEY)){
+    if (detect_key(MENU_SELECT_KEY)){
         data->key = LV_KEY_PREV;
         last_pressed_key = LV_KEY_PREV;
         data->state = LV_INDEV_STATE_PRESSED;
     } 
 
-    else if (mtk_detect_key(MENU_OK_KEY)){
+    else if (detect_key(MENU_OK_KEY)){
         data->key = LV_KEY_NEXT;
         last_pressed_key = LV_KEY_NEXT;
         data->state = LV_INDEV_STATE_PRESSED;
     } 
     
-    else if (mtk_detect_key(PMIC_PWR_KEY)){
+    else if (detect_key(PMIC_PWR_KEY)){
         data->key = LV_KEY_ENTER;
         last_pressed_key = LV_KEY_ENTER;
         data->state = LV_INDEV_STATE_PRESSED;
@@ -62,7 +62,7 @@ bool droidboot_internal_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
 //Init SD card
 int dridboot_mtk_sd_card()
 {
-    return 0;
+    return sdcard_init();
 }
 
 ssize_t dridboot_internal_sd_read_block(void *buf, uint32_t block, uint count)
@@ -126,9 +126,9 @@ void droidboot_internal_delay(unsigned int time)
 // fuction to boot linux from ram
 void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_size, void *ramdisk_raw, off_t ramdisk_size, void *dtb_raw, off_t dtb_raw_size, char *options)
 {
-    cmdline_append(options);
+   // cmdline_append(options);
     // NOTE: next function is NOT a part of mtk-lk you should implement it yourself based on your boot_linux_from_storage
-	mtk_boot_linux_from_ram(kernel_raw, kernel_raw_size, ramdisk_raw, ramdisk_size);
+	//mtk_boot_linux_from_ram(kernel_raw, kernel_raw_size, ramdisk_raw, ramdisk_size);
 	
 }
 
