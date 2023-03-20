@@ -6,7 +6,6 @@
  *
  */
 
-#if defined (__aarch64__) || defined(__arm__)
 #include<Uefi.h>
 #include<Library/ArmLib.h>
 #include<Library/UefiLib.h>
@@ -163,7 +162,3 @@ int boot_linux_arm(void *kernel_raw, off_t kernel_raw_size, void *dtb_raw, off_t
 	while(1)CpuDeadLoop();
 	return 0;
 }
-#else
-#include"internal.h"
-int boot_linux_arm(linux_boot*boot __attribute__((unused))){return -1;}
-#endif

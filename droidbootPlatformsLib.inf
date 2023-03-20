@@ -46,3 +46,4 @@
 
 [Protocols]
   gEfiBlockIoProtocolGuid                       # PROTOCOL CONSUMES
+  gKernelFdtProtocolGuid

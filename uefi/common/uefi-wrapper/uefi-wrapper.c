@@ -13,7 +13,7 @@ EFI_SYSTEM_TABLE *getSystemTable()
 }
 // droidboot uefi entry point
 EFI_STATUS EFIAPI UefiMain(IN EFI_HANDLE ih,IN EFI_SYSTEM_TABLE*st){
-    droidboot_log(DROIDBOOT_LOG_INFO, "Welcome to droidboot UEFI wrapper\n");
+    droidboot_log(DROIDBOOT_LOG_ERROR, "Welcome to droidboot UEFI wrapper\n");
     gST2=st;
     droidboot_internal_setgST(st);
 	droidboot_init();

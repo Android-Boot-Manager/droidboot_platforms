@@ -38,6 +38,7 @@
 #include <u-boot.h>
 #elif defined(PLATFORM_RENEGADE)
 #include <droidboot_uefi_common.h>
+#include <common_linuxloader.h>
 #include <libc-hack.h>
 #endif
 
@@ -72,6 +73,7 @@ void *droidboot_get_kernel_load_addr(void);
 void *droidboot_get_ramdisk_load_addr(void);
 bool droidboot_append_ramdisk_to_kernel(void);
 void *droidboot_get_dtb_load_addr(void);
+void *droidboot_dtb_post_processing(void *dtb_raw, off_t dtb_raw_size);
 
 void droidboot_platform_tasks();
 #endif
