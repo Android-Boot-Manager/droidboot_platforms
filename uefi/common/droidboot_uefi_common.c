@@ -163,7 +163,8 @@ ssize_t dridboot_internal_sd_read_block(void *buf, uint32_t block, uint count)
 
 ssize_t dridboot_internal_sd_write_block(const void *buf, uint32_t block, uint count)
 {
-    return -1;
+    blkio->WriteBlocks(blkio, blkio->Media->MediaId, block, count*(blkio->Media->BlockSize), buf);
+    return count;
 }
 
 uint32_t droidboot_internal_sd_blklen()
