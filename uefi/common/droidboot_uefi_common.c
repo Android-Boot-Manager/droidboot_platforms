@@ -70,16 +70,10 @@ void droidboot_internal_setgST(EFI_SYSTEM_TABLE*st1)
 }
 droidboot_error droidboot_internal_platform_init()
 {
-    droidboot_log(DROIDBOOT_LOG_INFO, "droidboot internal init 1\n");
-    droidboot_log(DROIDBOOT_LOG_INFO, "droidboot internal init 2\n");
     gBS1 = gST1->BootServices;
-    droidboot_log(DROIDBOOT_LOG_INFO, "droidboot internal init 3\n");
-    droidboot_log(DROIDBOOT_LOG_INFO, "droidboot internal init try to init gop\n");
     gBS1->LocateProtocol(&gEfiGraphicsOutputProtocolGuid, NULL, (VOID **)&gop);
     droidboot_internal_uefigop_init();
-    droidboot_log(DROIDBOOT_LOG_INFO, "droidboot internal init gop init done\n");
     droidboot_internal_sd_init();
-    droidboot_log(DROIDBOOT_LOG_INFO, "droidboot internal init sd init done\n");
 	return DROIDBOOT_EOK;
 }
 
@@ -113,32 +107,51 @@ void droidboot_internal_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
 {
     EFI_INPUT_KEY  Key;
 
-    //Read keys
-    gST1->ConIn->ReadKeyStroke (gST1->ConIn, &Key);
+    // Count text in devices
+    UINTN cnt=0;
+    EFI_HANDLE*hands=NULL;
+    EFI_STATUS st=gBS->LocateHandleBuffer(
+        ByProtocol,
+        &gEfiSimpleTextInProtocolGuid,
+        NULL,&cnt,&hands
+    );
+    if(EFI_ERROR(st))return;
 
-    //Vol up
-    if (Key.ScanCode==SCAN_UP){
-        data->key = LV_KEY_ENTER;
-        last_pressed_key = LV_KEY_ENTER;
-        data->state = LV_INDEV_STATE_PRESSED;
-    }
+    for(UINTN i=0;i<cnt;i++){
+        EFI_SIMPLE_TEXT_INPUT_PROTOCOL*kbd=NULL;
+        if(EFI_ERROR(gBS->HandleProtocol(
+            hands[i],
+            &gEfiSimpleTextInProtocolGuid,
+            (VOID**)&kbd
+        ))||!kbd)continue;
+        if(EFI_ERROR(kbd->ReadKeyStroke(kbd,&Key)))continue;
+        //Vol up
+        if (Key.ScanCode==SCAN_UP){
+            data->key = LV_KEY_PREV;
+            last_pressed_key = LV_KEY_PREV;
+            data->state = LV_INDEV_STATE_PRESSED;
+            return;
+        }
 
-    //Vol down
-    else if (Key.ScanCode==SCAN_DOWN){
-        data->key = LV_KEY_NEXT;
-        last_pressed_key = LV_KEY_NEXT;
-        data->state = LV_INDEV_STATE_PRESSED;
-    }
+        //Vol down
+        else if (Key.ScanCode==SCAN_DOWN){
+            data->key = LV_KEY_NEXT;
+            last_pressed_key = LV_KEY_NEXT;
+            data->state = LV_INDEV_STATE_PRESSED;
+            return;
+        }
 
-    //Pwr key
-    else if (Key.ScanCode==SCAN_SUSPEND){
-       data->key = LV_KEY_PREV;
-        last_pressed_key = LV_KEY_PREV;
-        data->state = LV_INDEV_STATE_PRESSED;
-    }
-    else {
-        data->key=last_pressed_key;
-        data->state = LV_INDEV_STATE_RELEASED;
+        //Pwr key (renegade: whatever it is seems like right scan code is 0)
+        else if (Key.ScanCode==0 || Key.ScanCode==SCAN_SUSPEND){
+            data->key = LV_KEY_ENTER;
+            last_pressed_key = LV_KEY_ENTER;
+            data->state = LV_INDEV_STATE_PRESSED;
+            return;
+        }
+        else {
+            data->key=last_pressed_key;
+            data->state = LV_INDEV_STATE_RELEASED;
+        }
     }
 }
 
