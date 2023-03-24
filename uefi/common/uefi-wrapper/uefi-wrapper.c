@@ -14,10 +14,14 @@ EFI_SYSTEM_TABLE *getSystemTable()
 // droidboot uefi entry point
 EFI_STATUS EFIAPI UefiMain(IN EFI_HANDLE ih,IN EFI_SYSTEM_TABLE*st){
     droidboot_log(DROIDBOOT_LOG_ERROR, "Welcome to droidboot UEFI wrapper\n");
+    REPORT_STATUS_CODE(EFI_PROGRESS_CODE,(EFI_SOFTWARE_DXE_BS_DRIVER|EFI_SW_PC_USER_SETUP));
+
+    EfiBootManagerConnectAll();
+    EfiBootManagerRefreshAllBootOption();
     gST2=st;
     droidboot_internal_setgST(st);
-	droidboot_init();
+    droidboot_init();
     droidboot_log(DROIDBOOT_LOG_INFO, "droidboot_init done!\n");
     droidboot_show_dualboot_menu();
-	return 0;
+    return 0;
 }

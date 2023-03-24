@@ -16,6 +16,7 @@
 #include <droidboot_drivers.h>
 #include <droidboot_logging.h>
 #include <droidboot_main.h>
+#include <droidboot_gpt.h>
 
 EFI_SYSTEM_TABLE                    *gST1;
 EFI_BOOT_SERVICES             *gBS1;

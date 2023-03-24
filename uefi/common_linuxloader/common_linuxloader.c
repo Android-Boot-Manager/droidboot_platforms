@@ -19,6 +19,8 @@
 #include <string.h>
 #include <droidboot_dtb.h>
 
+#include "linux-boot/arm.h"
+
 #define MEM_ALIGN          0x00200000
 #define MAX_KERNEL_SIZE    0x04000000
 #define LINUX_ARM64_OFFSET 0x00080000
