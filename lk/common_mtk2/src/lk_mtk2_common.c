@@ -67,27 +67,32 @@ int dridboot_mtk_sd_card()
 
 ssize_t dridboot_internal_sd_read_block(void *buf, uint32_t block, uint count)
 {
-    return 0;
+    bdev_t *lk_bdev = bio_open("sdmmc1");
+    return bio_read_block(lk_bdev, buf, block, count);
 }
 
 ssize_t dridboot_internal_sd_write_block(const void *buf, uint32_t block, uint count)
 {
-    return 0;
+    bdev_t *lk_bdev = bio_open("sdmmc1");
+    return bio_write_block(lk_bdev, buf, block, count);
 }
 
 uint32_t droidboot_internal_sd_blklen()
 {
-    return 0;
+    bdev_t *bdev = bio_open("sdmmc1");
+    return bdev->block_size;
 }
 
 uint64_t droidboot_internal_sd_blkcnt()
 {
-    return 0;
+    bdev_t *bdev = bio_open("sdmmc1");
+    return bdev->block_count;
 }
 
 bool droidboot_internal_sd_exists()
 {
-    return false;
+    bdev_t *bdev = bio_open("sdmmc1");
+    return bdev!=NULL;
 }
 
 // Get screen height and width
