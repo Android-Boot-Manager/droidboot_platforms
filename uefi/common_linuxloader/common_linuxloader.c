@@ -18,6 +18,7 @@
 #include <droidboot_main.h>
 #include <string.h>
 #include <droidboot_dtb.h>
+#include <droidboot_kernel_helper.h>
 
 #include "linux-boot/arm.h"
 
@@ -53,12 +54,13 @@ void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_s
     void *kernel_reallocated;
     void *ramdisk_reallocated;
     void *dtb_address;
+    off_t kernel_actual_size;
 
     // Reallocate kernel
     if(!(kernel_reallocated=AllocateAlignedPages(mem_pages,MEM_ALIGN)))
         droidboot_log(DROIDBOOT_LOG_ERROR, "allocate for kernel reallocation failed");
     ZeroMem(kernel_reallocated,mem_size);
-    memcpy(kernel_reallocated+LINUX_ARM64_OFFSET, kernel_raw, kernel_raw_size);
+    droidboot_kernel_prepear(kernel_raw, kernel_raw_size, kernel_reallocated+LINUX_ARM64_OFFSET, MAX_KERNEL_SIZE, &kernel_actual_size);
     droidboot_log(DROIDBOOT_LOG_INFO, "kernel reallocation done, old addr: %p new: %p\n", kernel_raw, kernel_reallocated+LINUX_ARM64_OFFSET);
     droidboot_dump_hex(DROIDBOOT_LOG_TRACE, (void *)kernel_reallocated+LINUX_ARM64_OFFSET, 16);
 
@@ -90,5 +92,5 @@ void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_s
     update_from_kernel_fdt(dtb_address);
 
     // Boot new kernel
-    boot_linux_arm(kernel_reallocated+LINUX_ARM64_OFFSET, kernel_raw_size, dtb_address, dtb_raw_size);
+    boot_linux_arm(kernel_reallocated+LINUX_ARM64_OFFSET, kernel_actual_size, dtb_address, dtb_raw_size);
 }
