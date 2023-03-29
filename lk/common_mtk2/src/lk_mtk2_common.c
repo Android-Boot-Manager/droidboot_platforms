@@ -131,9 +131,9 @@ void droidboot_internal_delay(unsigned int time)
 // fuction to boot linux from ram
 void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_size, void *ramdisk_raw, off_t ramdisk_size, void *dtb_raw, off_t dtb_raw_size, void *dtbo_raw, off_t dtbo_raw_size, char *options)
 {
-   // cmdline_append(options);
+    kcmdline_append(options);
     // NOTE: next function is NOT a part of mtk-lk you should implement it yourself based on your boot_linux_from_storage
-	//mtk_boot_linux_from_ram(kernel_raw, kernel_raw_size, ramdisk_raw, ramdisk_size);
+	boot_linux_from_ram(kernel_raw, kernel_raw_size, ramdisk_size);
 	
 }
 
@@ -144,7 +144,7 @@ void droidboot_internal_pre_ramdisk_load(void *kernel_raw, off_t kernel_raw_size
 
 void *droidboot_internal_get_kernel_load_addr()
 {
-    return get_kernel_addr();
+    return NULL;
 }
 
 void *droidboot_internal_get_ramdisk_load_addr()
