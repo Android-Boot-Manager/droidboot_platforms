@@ -99,9 +99,9 @@ void droidboot_delay(unsigned int time)
     droidboot_internal_delay(time);
 }
 
-void droidboot_platform_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_size, void *ramdisk_raw, off_t ramdisk_size, void *dtb_raw, off_t dtb_raw_size, char *options)
+void droidboot_platform_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_size, void *ramdisk_raw, off_t ramdisk_size, void *dtb_raw, off_t dtb_raw_size, void *dtbo_raw, off_t dtbo_raw_size, char *options)
 {
-    droidboot_internal_boot_linux_from_ram(kernel_raw, kernel_raw_size, ramdisk_raw, ramdisk_size, dtb_raw, dtb_raw_size, options);
+    droidboot_internal_boot_linux_from_ram(kernel_raw, kernel_raw_size, ramdisk_raw, ramdisk_size, dtb_raw, dtb_raw_size, dtbo_raw, dtbo_raw_size, options);
 }
 
 void droidboot_pre_ramdisk_load(void *kernel_raw, off_t kernel_raw_size)
@@ -124,6 +124,10 @@ void *droidboot_get_dtb_load_addr()
     return droidboot_internal_get_dtb_load_addr();
 }
 
+void *droidboot_get_dtbo_load_addr()
+{
+    return droidboot_internal_get_dtbo_load_addr();
+}
 bool droidboot_append_ramdisk_to_kernel()
 {
     return droidboot_internal_append_ramdisk_to_kernel();

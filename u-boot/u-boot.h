@@ -31,7 +31,7 @@ void droidboot_internal_platform_system_log(const char *buf);
 void droidboot_internal_delay(unsigned int time);
 
 // fuction to boot linux from ram
-void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_size, void *ramdisk_raw, off_t ramdisk_size, void *dtb_raw, off_t dtb_raw_size, char *options);
+void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_size, void *ramdisk_raw, off_t ramdisk_size, void *dtb_raw, off_t dtb_raw_size, void *dtbo_raw, off_t dtbo_raw_size, char *options);
 void droidboot_internal_pre_ramdisk_load(void *kernel_raw, off_t kernel_raw_size);
 void *droidboot_internal_get_kernel_load_addr(void);
 void *droidboot_internal_get_ramdisk_load_addr(void);

@@ -66,6 +66,7 @@ char *strcasestr(const char *, const char *);
 void *memmem(const void *, size_t, const void *, size_t);
 void *memrchr(const void *, int, size_t);
 void *mempcpy(void *, const void *, size_t);
+char* strncat(char* destination, const char* source, size_t num);
 #ifndef __cplusplus
 char *basename();
 #endif

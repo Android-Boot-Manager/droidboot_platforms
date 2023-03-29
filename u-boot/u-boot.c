@@ -214,7 +214,7 @@ void *droidboot_internal_get_dtb_load_addr()
 
 
 // fuction to boot linux from ram
-void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_size, void *ramdisk_raw, off_t ramdisk_size, void *dtb_raw, off_t dtb_raw_size, char *options)
+void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_size, void *ramdisk_raw, off_t ramdisk_size, void *dtb_raw, off_t dtb_raw_size, void *dtbo_raw, off_t dtbo_raw_size, char *options)
 {
     env_set("bootargs", options);
     env_set("kernel_comp_addr_r", droidboot_internal_get_kernel_load_addr()+kernel_raw_size);

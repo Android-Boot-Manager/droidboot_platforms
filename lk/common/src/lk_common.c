@@ -39,3 +39,9 @@ void droidboot_internal_platform_tasks()
   thread_sleep(200);
 }
 
+// No lk targets do implement dtbo yet
+void *droidboot_internal_get_dtbo_load_addr()
+{
+    return NULL;
+}
+

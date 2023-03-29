@@ -219,6 +219,11 @@ void *droidboot_internal_get_dtb_load_addr()
     return (void *)1;
 }
 
+void *droidboot_internal_get_dtbo_load_addr()
+{
+    return (void *)1;
+}
+
 bool droidboot_internal_append_ramdisk_to_kernel()
 {
     return false;
