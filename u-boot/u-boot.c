@@ -219,7 +219,6 @@ void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_s
     env_set("bootargs", options);
     env_set("kernel_comp_addr_r", droidboot_internal_get_kernel_load_addr()+kernel_raw_size);
     env_set("kernel_comp_size", kernel_raw_size);
-    env_set("bootargs", options);
     char *argv[4] = {"booti", kernel_raw, ramdisk_raw, dtb_raw};
     struct cmd_tbl cmdtb;
     cmdtb.name="booti";
