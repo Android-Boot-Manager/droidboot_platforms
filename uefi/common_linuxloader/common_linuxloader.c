@@ -104,13 +104,13 @@ void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_s
 
     // Reallocate DTB
     // NOTE: Here we do change dtb size by adding 512 bytes for our extras, 4096 for cmdline, to make sure we have space for cmdline, memory node and initrd addr
-    dtb_raw_size+=512+dtbo_raw_size+4096;
+    dtb_raw_size+=512+fdt_totalsize(dtbo_raw)+4096;
     mem_pages=EFI_SIZE_TO_PAGES(ALIGN_VALUE(dtb_raw_size,MEM_ALIGN));
     mem_size=EFI_PAGES_TO_SIZE(mem_pages);
     if(!(dtb_address=AllocateAlignedPages(mem_pages,MEM_ALIGN)))
         droidboot_log(DROIDBOOT_LOG_ERROR, "dtb alloc failed\n");
     ZeroMem(dtb_address,mem_size);
-    CopyMem(dtb_address,dtb_raw,dtb_raw_size-512-dtbo_raw_size-4096);
+    CopyMem(dtb_address,dtb_raw,dtb_raw_size-512-fdt_totalsize(dtbo_raw)-4096);
     droidboot_log(DROIDBOOT_LOG_INFO, "dtb reallocation done, old addr: %p new: %p, new size: %llx\n", dtb_raw, dtb_address, dtb_raw_size);
 
     // Update size in dtb itself
@@ -137,7 +137,7 @@ void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_s
     // Append dtbo
     unsigned char *header_ptr = (unsigned char *)dtbo_raw;
     droidboot_dump_hex(DROIDBOOT_LOG_TRACE, dtbo_raw, 16);
-    if(dtbo_raw_size<=4||dtbo_raw_size>MAX_DTBO_SIZE){
+    if(fdt_totalsize(dtbo_raw)<=4||fdt_totalsize(dtbo_raw)>MAX_DTBO_SIZE){
         droidboot_log(DROIDBOOT_LOG_ERROR, "invalid dtbo size\n");
     } else {
         const uint32_t magic_dtbo=0xd0dfeed;
