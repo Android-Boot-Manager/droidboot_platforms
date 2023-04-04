@@ -12,6 +12,7 @@
 
 [LibraryClasses]
   UefiLib
+  UfdtLib
 
 [Sources]
   common_linuxloader.c

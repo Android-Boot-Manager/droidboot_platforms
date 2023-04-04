@@ -36,6 +36,7 @@
   UefiRuntimeServicesTableLib
   ReportStatusCodeLib
   droidbootLib
+  UfdtLib
 
 [Sources]
   uefi/common/droidboot_uefi_common.c

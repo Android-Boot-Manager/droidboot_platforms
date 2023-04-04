@@ -20,6 +20,7 @@
 #include <string.h>
 #include <droidboot_dtb.h>
 #include <droidboot_kernel_helper.h>
+#include <droidboot_ufdt_overlay.h>
 
 #include "linux-boot/arm.h"
 
@@ -104,13 +105,36 @@ void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_s
 
     // Reallocate DTB
     // NOTE: Here we do change dtb size by adding 512 bytes for our extras, 4096 for cmdline, to make sure we have space for cmdline, memory node and initrd addr
-    dtb_raw_size+=512+fdt_totalsize(dtbo_raw)+4096;
+    if(dtbo_raw==NULL)
+        dtb_raw_size+=512+4096;
+    else
+        dtb_raw_size+=512+fdt_totalsize(dtbo_raw)+4096;
     mem_pages=EFI_SIZE_TO_PAGES(ALIGN_VALUE(dtb_raw_size,MEM_ALIGN));
     mem_size=EFI_PAGES_TO_SIZE(mem_pages);
     if(!(dtb_address=AllocateAlignedPages(mem_pages,MEM_ALIGN)))
         droidboot_log(DROIDBOOT_LOG_ERROR, "dtb alloc failed\n");
     ZeroMem(dtb_address,mem_size);
-    CopyMem(dtb_address,dtb_raw,dtb_raw_size-512-fdt_totalsize(dtbo_raw)-4096);
+    // Append dtbo
+    if(dtbo_raw==NULL)
+        CopyMem(dtb_address,dtb_raw,dtb_raw_size);
+    else {
+        unsigned char *header_ptr = (unsigned char *)dtbo_raw;
+        droidboot_dump_hex(DROIDBOOT_LOG_TRACE, dtbo_raw, 16);
+        if(fdt_totalsize(dtbo_raw)<=4||fdt_totalsize(dtbo_raw)>MAX_DTBO_SIZE){
+            CopyMem(dtb_address,dtb_raw,dtb_raw_size);
+            droidboot_log(DROIDBOOT_LOG_ERROR, "invalid dtbo size\n");
+        } else {
+            const uint32_t magic_dtbo=0xd0dfeed;
+            if(memcmp(dtbo_raw, &magic_dtbo, 4)){
+                struct fdt_header*fdto=ufdt_apply_overlay(dtb_raw,fdt_totalsize(dtb_raw),dtbo_raw,fdt_totalsize(dtbo_raw));
+                CopyMem(dtb_address,fdto,fdt_totalsize(fdto));
+                droidboot_log(DROIDBOOT_LOG_INFO, "Dtb overlay aplied\n");
+            } else {
+                CopyMem(dtb_address,dtb_raw,dtb_raw_size);
+                droidboot_log(DROIDBOOT_LOG_ERROR, "dtbo wrong signature, ecepted: %llx, got: %x%x%x %x\n", magic_dtbo, header_ptr[0], header_ptr[1], header_ptr[2], header_ptr[3]);
+            }
+        }
+    }
     droidboot_log(DROIDBOOT_LOG_INFO, "dtb reallocation done, old addr: %p new: %p, new size: %llx\n", dtb_raw, dtb_address, dtb_raw_size);
 
     // Update size in dtb itself
@@ -122,32 +146,21 @@ void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_s
     if(r!=0){
         droidboot_log(DROIDBOOT_LOG_ERROR, "invalid dtb head: %s\n",fdt_strerror(r));
     }
-    r=fdt_check_header(dtbo_raw);
-    if(r!=0){
-        droidboot_log(DROIDBOOT_LOG_ERROR,"invalid dtbo head: %s\n",fdt_strerror(r));
+    if(dtbo_raw!=NULL){
+        r=fdt_check_header(dtbo_raw);
+        if(r!=0){
+            droidboot_log(DROIDBOOT_LOG_ERROR,"invalid dtbo head: %s\n",fdt_strerror(r));
+        }
     }
     droidboot_log(DROIDBOOT_LOG_INFO,"dtb totalsize is: %d\n",fdt_totalsize(dtb_address));
-    droidboot_log(DROIDBOOT_LOG_INFO,"dtbo totalsize is: %d\n",fdt_totalsize(dtbo_raw));
+    if(dtbo_raw!=NULL)
+        droidboot_log(DROIDBOOT_LOG_INFO,"dtbo totalsize is: %d\n",fdt_totalsize(dtbo_raw));
 
     if((model=(char*)fdt_getprop(dtb_address,0,"model",NULL)))
         droidboot_log(DROIDBOOT_LOG_INFO, "dtb device model: %s\n",model);
-    if((model=(char*)fdt_getprop(dtbo_raw,0,"model",NULL)))
-        droidboot_log(DROIDBOOT_LOG_INFO, "dtbo device model: %s\n",model);
-
-    // Append dtbo
-    unsigned char *header_ptr = (unsigned char *)dtbo_raw;
-    droidboot_dump_hex(DROIDBOOT_LOG_TRACE, dtbo_raw, 16);
-    if(fdt_totalsize(dtbo_raw)<=4||fdt_totalsize(dtbo_raw)>MAX_DTBO_SIZE){
-        droidboot_log(DROIDBOOT_LOG_ERROR, "invalid dtbo size\n");
-    } else {
-        const uint32_t magic_dtbo=0xd0dfeed;
-        if(memcmp(dtbo_raw, &magic_dtbo, 4)){
-            r=fdt_overlay_apply(dtb_address,dtbo_raw);
-            if(r!=0){
-                droidboot_log(DROIDBOOT_LOG_ERROR, "Failed to apply dtbo overlay, error: %s\n", fdt_strerror(r));
-            }
-            droidboot_log(DROIDBOOT_LOG_INFO, "Dtb overlay aplied\n");
-        } else  droidboot_log(DROIDBOOT_LOG_ERROR, "dtbo wrong signature, ecepted: %llx, got: %x%x%x %x\n", magic_dtbo, header_ptr[0], header_ptr[1], header_ptr[2], header_ptr[3]);
+    if(dtbo_raw!=NULL){
+        if((model=(char*)fdt_getprop(dtbo_raw,0,"model",NULL)))
+            droidboot_log(DROIDBOOT_LOG_INFO, "dtbo device model: %s\n",model);
     }
 
     // Update fdt
