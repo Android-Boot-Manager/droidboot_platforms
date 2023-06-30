@@ -33,6 +33,42 @@
 #define MAGIC_QCOM_DTBO_IMG 0x1EABB7D7
 #define MAGIC_DTBO          0xEDFE0DD0
 
+typedef struct qcom_msm_id{
+	uint32_t platform_id;
+	uint32_t soc_rev;
+}qcom_msm_id;
+
+typedef struct qcom_board_id{
+	uint32_t variant_id;
+	uint32_t platform_subtype;
+}qcom_board_id;
+
+typedef struct qcom_pmic_id{
+	uint32_t pmic_version[4];
+}qcom_pmic_id;
+
+static int get_board_varient_id(){
+    int node=0,r=-1;
+	EFI_STATUS st;
+	uint64_t base=0,size=0;
+	KERNEL_FDT_PROTOCOL*fdt;
+	st=gBS->LocateProtocol(
+		&gKernelFdtProtocolGuid,
+		NULL,
+		(VOID**)&fdt
+	);
+	if(EFI_ERROR(st)||!fdt||!fdt->Fdt)return r;
+	droidboot_log(DROIDBOOT_LOG_INFO,"update board-id from kernel fdt");
+
+    int off,msm_len=0,board_len=0;
+	if(!fdt->Fdt||fdt_check_header(fdt->Fdt)!=0)return -1;
+	if((off=fdt_path_offset(fdt->Fdt,"/"))<0)return -1;
+	qcom_msm_id*msm_id=(qcom_msm_id*)fdt_getprop(fdt->Fdt,off,"qcom,msm-id",&msm_len);
+	qcom_board_id*board_id=(qcom_board_id*)fdt_getprop(fdt->Fdt,off,"qcom,board-id",&board_len);
+    droidboot_log(DROIDBOOT_LOG_INFO,"Update ids, board-id varient_id: %lx, platform_subtypr: %lx\n", board_id->variant_id, board_id->platform_subtype);
+
+        return board_id->variant_id;
+}
 // Function to update memory node in target dtb from dtb provided by 1st stage bootloader
 static int update_from_kernel_fdt(void *dtb_raw){
 	int node=0,r=-1;
@@ -164,10 +200,12 @@ void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_s
     }
 
     // Update fdt
+    char abm_board_id[31];
+    sprintf(abm_board_id, " abm-board-id=%lx ", get_board_varient_id());
     fdt_add_ramdisk_addr(ramdisk_reallocated, ramdisk_size, dtb_address);
     update_from_kernel_fdt(dtb_address);
     strcpy(cmdline, options);
-    strcat(cmdline, " ");
+    strcat(cmdline, abm_board_id);
     const char *kfdt_cmdline=droidboot_uefi_get_cmdline_from_kfdt();
     if(kfdt_cmdline>=0){
         strcat(cmdline, kfdt_cmdline);
