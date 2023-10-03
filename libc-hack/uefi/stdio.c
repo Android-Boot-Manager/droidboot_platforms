@@ -8,6 +8,7 @@
 
 #include <stdarg.h>
 #include <Library/DebugLib.h>
+#include <stdio.h>
 
 
 int printf(const char *format, ...)

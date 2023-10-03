@@ -43,3 +43,6 @@ int droidboot_internal_get_disp_buffer_height(void);
 bool droidboot_internal_use_double_buffering(void);
 
 void droidboot_internal_platform_tasks();
+
+// Function to set efi system table, to be called by code outside of droidboot part.
+void droidboot_internal_setgST(EFI_SYSTEM_TABLE*st1);

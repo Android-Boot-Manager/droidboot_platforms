@@ -4,6 +4,7 @@
 #include<Library/ReportStatusCodeLib.h>
 #include<droidboot_main.h>
 #include <droidboot_logging.h>
+#include<droidboot_uefi_common.h>
 
 EFI_SYSTEM_TABLE                    *gST2;
 
