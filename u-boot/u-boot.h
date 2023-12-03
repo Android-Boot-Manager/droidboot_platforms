@@ -24,6 +24,7 @@ ssize_t dridboot_internal_sd_write_block(const void *buf, uint32_t block, uint c
 uint32_t droidboot_internal_sd_blklen(void);
 uint64_t droidboot_internal_sd_blkcnt(void);
 bool droidboot_internal_sd_exists(void);
+bool droidboot_internal_have_fallback(void);
 
 // Logging functions
 void droidboot_internal_platform_on_screen_log(const char *buf);

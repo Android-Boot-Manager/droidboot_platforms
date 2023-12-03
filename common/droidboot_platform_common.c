@@ -67,6 +67,10 @@ bool droidboot_sd_exists()
     return droidboot_internal_sd_exists();
 }
 
+bool droidboot_have_fallback()
+{
+    return droidboot_internal_have_fallback();
+}
 
 int droidboot_get_disp_buffer_height()
 {

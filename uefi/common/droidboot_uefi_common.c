@@ -183,6 +183,11 @@ bool droidboot_internal_sd_exists()
     return true;
 }
 
+bool droidboot_internal_have_fallback()
+{
+    return false;
+}
+
 // Logging functions
 void droidboot_internal_platform_on_screen_log(const char *buf)
 {

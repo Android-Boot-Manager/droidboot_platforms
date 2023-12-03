@@ -39,6 +39,12 @@ void droidboot_internal_platform_tasks()
   thread_sleep(200);
 }
 
+// All current lk platforms do provide fallback
+bool droidboot_internal_have_fallback()
+{
+  return true;
+}
+
 // No lk targets do implement dtbo yet
 void *droidboot_internal_get_dtbo_load_addr()
 {
