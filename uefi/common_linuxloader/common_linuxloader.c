@@ -21,6 +21,7 @@
 #include <droidboot_dtb.h>
 #include <droidboot_kernel_helper.h>
 #include <droidboot_ufdt_overlay.h>
+#include <device_quirks.h>
 
 #include "linux-boot/arm.h"
 
@@ -171,6 +172,7 @@ void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_s
             }
         }
     }
+
     droidboot_log(DROIDBOOT_LOG_INFO, "dtb reallocation done, old addr: %p new: %p, new size: %llx\n", dtb_raw, dtb_address, dtb_raw_size);
 
     // Update size in dtb itself
@@ -211,6 +213,9 @@ void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_s
         strcat(cmdline, kfdt_cmdline);
     }
     droidboot_dtb_update_cmdline(dtb_address, &cmdline);
+
+    // As a last step apply platform specific hacks, if any
+    droidboot_uefi_dtb_device_patch(dtb_address, model);
 
     // Boot new kernel
     boot_linux_arm(kernel_reallocated+LINUX_ARM64_OFFSET, kernel_actual_size, dtb_address, dtb_raw_size);

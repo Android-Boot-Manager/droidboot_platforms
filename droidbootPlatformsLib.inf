@@ -41,6 +41,7 @@
 [Sources]
   uefi/common/droidboot_uefi_common.c
   uefi/common_linuxloader/common_linuxloader.c
+  uefi/common_linuxloader/device_quirks.c
   uefi/common_linuxloader/linux-boot/arm.c
   common/droidboot_platform_common.c
 
