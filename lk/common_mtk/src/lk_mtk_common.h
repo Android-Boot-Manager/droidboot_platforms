@@ -16,7 +16,7 @@ ssize_t dridboot_internal_sd_read_block(void *buf, uint32_t block, uint count);
 ssize_t dridboot_internal_sd_write_block(const void *buf, uint32_t block, uint count);
 uint32_t droidboot_internal_sd_blklen();
 uint64_t droidboot_internal_sd_blkcnt();
-bool droidboot_internal_sd_exists()
+bool droidboot_internal_sd_exists();
 // Verify if there is abm compatible sd card
 void droidboot_mtk_sd_check();
 

@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 char* get_codename(){
     return "yggdrasil";
 }
@@ -8,4 +10,9 @@ char* get_vendor(){
 
 char* get_model(){
     return "Volla Phone";
+}
+
+bool droidboot_internal_use_double_buffering()
+{
+    return false;
 }
