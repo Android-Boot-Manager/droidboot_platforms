@@ -211,25 +211,20 @@ void droidboot_mtk_main_menu_add_options(lv_obj_t * list1)
 
 int droidboot_mtk_show_boot_mode_menu()
 {
-    exit_mtk=-1;
-    
-    lv_group_t * lvgl_main_menu_group = lv_group_create();
-    lv_group_set_default(lvgl_main_menu_group);
+    exit=-1;
 
-    lv_indev_set_group(droidboot_lvgl_indev, lvgl_main_menu_group);
-    lv_obj_t * win = lv_win_create(lv_scr_act(), lv_pct(15));
+    lv_obj_t * win = lv_win_create(lv_scr_act(), lv_pct(6));
     lv_obj_set_pos(win, 0, 0);
-    lv_obj_set_size(win, lv_pct(100), lv_pct(90));
-    lv_obj_t * win_title = lv_win_add_title(win, "  Recovery Menu"); 
+    lv_obj_set_size(win, lv_pct(100), lv_pct(100));
+    lv_obj_t * win_title = lv_win_add_title(win, "  Recovery Menu");
     lv_obj_set_pos(win_title, 0, 0);
-    lv_obj_t * list1 = lv_list_create(win); 
+    lv_obj_t * list1 = lv_list_create(win);
     lv_obj_set_size(list1, lv_pct(100), lv_pct(100));
     lv_obj_set_pos(list1, 0, 0);
     lv_obj_align(list1, LV_ALIGN_BOTTOM_MID, 0, 0);
     droidboot_mtk_main_menu_add_options(list1);
-    lv_group_focus_obj(win);
-    while(exit_mtk==-1){
-        mdelay(50);
+    while(exit==-1){
+        thread_sleep(50);
     }
     return exit;
 }
