@@ -40,6 +40,8 @@
 #include <droidboot_uefi_common.h>
 #include <common_linuxloader.h>
 #include <libc-hack.h>
+#elif defined(PLATFORM_SIMULATOR)
+#include <simulator.h>
 #endif
 
 void droidboot_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
