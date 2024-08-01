@@ -11,7 +11,7 @@ static pthread_t t, t2;
 static bool s_simulator_running, s_simulator_vol_down_pressed, s_simulator_vol_up_pressed, s_simulator_pwr_pressed;
 static uint32_t last_pressed_key;
 static JavaVM* s_simulator_jvm;
-static jobject s_simulator_bitmap;
+static jobject s_simulator_bitmap, s_simulator_thiz;
 static jint s_simulator_h, s_simulator_w;
 
 int droidboot_internal_get_display_height()
@@ -24,16 +24,33 @@ int droidboot_internal_get_display_width()
 	return s_simulator_w;
 }
 
-JNIEXPORT void simulator_start(JNIEnv* env, jobject bitmap, jint w, jint h) {
+JNIEXPORT void simulator_stop(JNIEnv* env)
+{
+	s_simulator_running = false;
+	pthread_join(t, NULL);
+	pthread_join(t2, NULL);
+	s_simulator_jvm = NULL;
+	(*env)->DeleteGlobalRef(env, s_simulator_bitmap);
+	s_simulator_bitmap = NULL;
+	(*env)->DeleteGlobalRef(env, s_simulator_thiz);
+	s_simulator_thiz = NULL;
+	// TODO finish activity
+}
+
+JNIEXPORT void simulator_start(JNIEnv* env, jobject thiz, jobject bitmap, jint w, jint h)
+{
 	(*env)->GetJavaVM(env, &s_simulator_jvm);
 	s_simulator_bitmap = (*env)->NewGlobalRef(env, bitmap);
+	s_simulator_thiz = (*env)->NewGlobalRef(env, thiz);
 	s_simulator_h = h;
 	s_simulator_w = w;
 	droidboot_init();
 	droidboot_show_dualboot_menu();
+	simulator_stop(env);
 }
 
-JNIEXPORT void simulator_key(jint key) {
+JNIEXPORT void simulator_key(jint key)
+{
 	s_simulator_vol_down_pressed = key == 1;
 	s_simulator_vol_up_pressed = key == 2;
 	s_simulator_pwr_pressed = key == 3;
@@ -70,18 +87,17 @@ void droidboot_internal_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * are
 	lv_disp_flush_ready(disp_drv);
 }
 
-//Read keys state
 void droidboot_internal_key_read(lv_indev_drv_t* drv, lv_indev_data_t* data)
 {
-	if (s_simulator_vol_up_pressed){
+	if (s_simulator_vol_up_pressed) {
 		data->key = LV_KEY_PREV;
 		last_pressed_key = LV_KEY_PREV;
 		data->state = LV_INDEV_STATE_PRESSED;
-	} else if (s_simulator_vol_down_pressed){
+	} else if (s_simulator_vol_down_pressed) {
 		data->key = LV_KEY_NEXT;
 		last_pressed_key = LV_KEY_NEXT;
 		data->state = LV_INDEV_STATE_PRESSED;
-	} else if (s_simulator_pwr_pressed){
+	} else if (s_simulator_pwr_pressed) {
 		data->key = LV_KEY_ENTER;
 		last_pressed_key = LV_KEY_ENTER;
 		data->state = LV_INDEV_STATE_PRESSED;
@@ -101,33 +117,52 @@ ssize_t dridboot_internal_sd_read_block(void *buf, uint32_t block, uint count)
 {
 	if (!droidboot_internal_sd_exists())
 		return 0;
-	return 0; // TODO
+	JNIEnv* env;
+	int ret;
+	if ((ret = (*s_simulator_jvm)->GetEnv(s_simulator_jvm, (void **) &env, JNI_VERSION_1_6)) != JNI_OK) {
+		__android_log_print(ANDROID_LOG_ERROR, "droidboot", "failed to get jni env: %d", ret);
+	}
+
+	jclass cls = (*env)->GetObjectClass(env, s_simulator_thiz);
+	jmethodID readBlk = (*env)->GetMethodID(env, cls, "readBlocks", "(JI)[B");
+	jbyteArray arr = (*env)->CallObjectMethod(env, s_simulator_thiz, readBlk, (jlong)block*droidboot_internal_sd_blklen(), (jint)count*droidboot_internal_sd_blklen());
+	jbyte* bufferPtr = (*env)->GetByteArrayElements(env, arr, NULL);
+	jsize lengthOfArray = (*env)->GetArrayLength(env, arr);
+	memcpy(buf, bufferPtr, lengthOfArray);
+	(*env)->ReleaseByteArrayElements(env, arr, bufferPtr, JNI_ABORT);
+	return lengthOfArray;
 }
 
 ssize_t dridboot_internal_sd_write_block(const void *buf, uint32_t block, uint count)
 {
-	if (!droidboot_internal_sd_exists())
-		return 0;
-	return 0; // TODO
+	return 0; // do not break our sd card
 }
 
 uint32_t droidboot_internal_sd_blklen()
 {
 	if (!droidboot_internal_sd_exists())
 		return 0;
-	return 0; // TODO
+	return 512;
 }
 
 uint64_t droidboot_internal_sd_blkcnt()
 {
 	if (!droidboot_internal_sd_exists())
 		return 0;
-	return 0; // TODO
+	JNIEnv* env;
+	int ret;
+	if ((ret = (*s_simulator_jvm)->GetEnv(s_simulator_jvm, (void **) &env, JNI_VERSION_1_6)) != JNI_OK) {
+		__android_log_print(ANDROID_LOG_ERROR, "droidboot", "failed to get jni env: %d", ret);
+	}
+
+	jclass cls = (*env)->GetObjectClass(env, s_simulator_thiz);
+	jmethodID countBlk = (*env)->GetMethodID(env, cls, "blockCount", "()J");
+	return (uint64_t)(*env)->CallLongMethod(env, s_simulator_thiz, countBlk);
 }
 
 bool droidboot_internal_sd_exists()
 {
-	return true;
+	return s_simulator_running;
 }
 
 bool droidboot_internal_have_fallback()
@@ -179,16 +214,6 @@ void droidboot_internal_lvgl_threads_init()
 {
 	pthread_create(&t, NULL, droidboot_lv_tick_inc_thread, NULL);
 	pthread_create(&t2, NULL, droidboot_lv_timer_handler_thread, NULL);
-}
-
-JNIEXPORT void simulator_stop(JNIEnv* env)
-{
-	s_simulator_running = false;
-	pthread_join(t, NULL);
-	pthread_join(t2, NULL);
-	s_simulator_jvm = NULL;
-	(*env)->DeleteGlobalRef(env, s_simulator_bitmap);
-	s_simulator_bitmap = NULL;
 }
 
 void droidboot_internal_platform_on_screen_log(const char *buf)
