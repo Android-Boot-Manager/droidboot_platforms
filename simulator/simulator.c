@@ -6,6 +6,7 @@
 #include <pthread.h>
 #include <android/bitmap.h>
 #include <jni.h>
+#include <stdlib.h>
 
 static pthread_t t, t2;
 static bool s_simulator_running, s_simulator_vol_down_pressed, s_simulator_vol_up_pressed, s_simulator_pwr_pressed;
@@ -13,6 +14,7 @@ static uint32_t last_pressed_key;
 static JavaVM* s_simulator_jvm;
 static jobject s_simulator_bitmap, s_simulator_thiz;
 static jint s_simulator_h, s_simulator_w;
+extern int droidboot_exit;
 
 int droidboot_internal_get_display_height()
 {
@@ -26,15 +28,9 @@ int droidboot_internal_get_display_width()
 
 JNIEXPORT void simulator_stop(JNIEnv* env)
 {
-	s_simulator_running = false;
-	pthread_join(t, NULL);
-	pthread_join(t2, NULL);
-	s_simulator_jvm = NULL;
-	(*env)->DeleteGlobalRef(env, s_simulator_bitmap);
-	s_simulator_bitmap = NULL;
-	(*env)->DeleteGlobalRef(env, s_simulator_thiz);
-	s_simulator_thiz = NULL;
-	// TODO finish activity
+	if (!s_simulator_running) return;
+	__android_log_print(ANDROID_LOG_INFO, "droidboot", "closing");
+	droidboot_exit = 0;
 }
 
 JNIEXPORT void simulator_start(JNIEnv* env, jobject thiz, jobject bitmap, jint w, jint h)
@@ -47,6 +43,19 @@ JNIEXPORT void simulator_start(JNIEnv* env, jobject thiz, jobject bitmap, jint w
 	droidboot_init();
 	droidboot_show_dualboot_menu();
 	simulator_stop(env);
+	s_simulator_running = false;
+	pthread_join(t, NULL);
+	pthread_join(t2, NULL);
+	(*env)->DeleteGlobalRef(env, s_simulator_bitmap);
+	s_simulator_bitmap = NULL;
+	__android_log_print(ANDROID_LOG_INFO, "droidboot", "goodbye");
+	jclass cls = (*env)->GetObjectClass(env, s_simulator_thiz);
+	jmethodID redraw = (*env)->GetMethodID(env, cls, "finish", "()V");
+	(*env)->CallVoidMethod(env, s_simulator_thiz, redraw);
+	(*env)->DeleteGlobalRef(env, s_simulator_thiz);
+	s_simulator_thiz = NULL;
+	s_simulator_jvm = NULL;
+	exit(0);
 }
 
 JNIEXPORT void simulator_key(jint key)
@@ -81,6 +90,10 @@ void droidboot_internal_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * are
 			__android_log_print(ANDROID_LOG_ERROR, "droidboot", "failed to unlock bitmap (%d), trying again", ret);
 			usleep(10000);
 		}
+
+		jclass cls = (*env)->GetObjectClass(env, s_simulator_thiz);
+		jmethodID redraw = (*env)->GetMethodID(env, cls, "redraw", "()V");
+		(*env)->CallVoidMethod(env, s_simulator_thiz, redraw);
 		//__android_log_print(ANDROID_LOG_VERBOSE, "droidboot", "unlocked fb %p", addr);
 	}
 	// Inform the graphics library that we are ready with the flushing
@@ -218,7 +231,7 @@ void droidboot_internal_lvgl_threads_init()
 
 void droidboot_internal_platform_on_screen_log(const char *buf)
 {
-	__android_log_print(ANDROID_LOG_ERROR, "droidboot", "%s", buf); // TODO
+	__android_log_print(ANDROID_LOG_INFO, "droidboot", "%s", buf); // TODO toast?
 }
 
 void droidboot_internal_platform_system_log(const char *buf)
