@@ -43,26 +43,27 @@ void droidboot_internal_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * are
 {
 	if (s_simulator_bitmap != NULL) {
 		JNIEnv* env;
-		(*s_simulator_jvm)->GetEnv(s_simulator_jvm, (void **) &env, JNI_VERSION_1_6);
+		int ret;
+		if ((ret = (*s_simulator_jvm)->GetEnv(s_simulator_jvm, (void **) &env, JNI_VERSION_1_6)) != JNI_OK) {
+			__android_log_print(ANDROID_LOG_ERROR, "droidboot", "failed to get jni env: %d", ret);
+		}
 		void *addr;
-		while (!AndroidBitmap_lockPixels(env, s_simulator_bitmap, &addr)) {
-			droidboot_internal_platform_system_log("failed locking bitmap, trying again");
+		while (!(ret = AndroidBitmap_lockPixels(env, s_simulator_bitmap, &addr))) {
+			__android_log_print(ANDROID_LOG_ERROR, "droidboot", "failed to lock bitmap (%d), trying again", ret);
 			usleep(10000);
 		}
 		__android_log_print(ANDROID_LOG_VERBOSE, "droidboot", "locked fb %p", addr);
-		int w = (area->x2 - area->x1 + 1);
+		int w = area->x2 - area->x1 + 1;
 		long int location = 0;
-		long int byte_location = 0;
-		unsigned char bit_location = 0;
-		int32_t y;
-		for (y = area->y1; y <= area->y2; y++) {
-			location = ((area->x1 + 0) + (y + 0) * droidboot_internal_get_display_width()) * 4;
-			memcpy(&addr[location], (uint32_t *) color_p, w * 4);
+		// TODO fix segv :)
+		for(int32_t y = area->y1; y <= area->y2; y++) {
+			location = (area->x1 + 0) + (y + 0) * s_simulator_w;
+			//memcpy(&addr[location], color_p, w);
 			color_p += w;
 		}
 
-		while (!AndroidBitmap_unlockPixels(env, s_simulator_bitmap)) {
-			droidboot_internal_platform_system_log("failed unlocking bitmap, trying again");
+		while (!(ret = AndroidBitmap_unlockPixels(env, s_simulator_bitmap))) {
+			__android_log_print(ANDROID_LOG_ERROR, "droidboot", "failed to unlock bitmap (%d), trying again", ret);
 			usleep(10000);
 		}
 		__android_log_print(ANDROID_LOG_VERBOSE, "droidboot", "unlocked fb %p", addr);
@@ -144,7 +145,11 @@ bool droidboot_internal_use_double_buffering()
 //lvgl thread
 static void* droidboot_lv_tick_inc_thread(void * arg) {
 	/*Handle LitlevGL tick*/
-	(*s_simulator_jvm)->AttachCurrentThread(s_simulator_jvm, NULL, NULL);
+	JavaVMAttachArgs args;
+	args.version = JNI_VERSION_1_6;
+	args.name = "lv_tick_inc_thread";
+	JNIEnv* env;
+	(*s_simulator_jvm)->AttachCurrentThread(s_simulator_jvm, &env, &args);
 	while (s_simulator_running) {
 		sleep(1);
 		lv_tick_inc(1);
@@ -157,7 +162,11 @@ static void* droidboot_lv_tick_inc_thread(void * arg) {
 //lvgl thread
 static void* droidboot_lv_timer_handler_thread(void * arg) {
 	/*Handle LitlevGL tick*/
-	(*s_simulator_jvm)->AttachCurrentThread(s_simulator_jvm, NULL, NULL);
+	JavaVMAttachArgs args;
+	args.version = JNI_VERSION_1_6;
+	args.name = "lv_timer_handler_thread";
+	JNIEnv* env;
+	(*s_simulator_jvm)->AttachCurrentThread(s_simulator_jvm, &env, &args);
 	while (s_simulator_running) {
 		sleep(1);
 		lv_timer_handler();
