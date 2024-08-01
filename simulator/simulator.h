@@ -32,6 +32,5 @@ void *droidboot_internal_get_dtb_load_addr();
 void *droidboot_internal_get_dtbo_load_addr();
 bool droidboot_internal_append_ramdisk_to_kernel();
 void droidboot_internal_platform_tasks();
-void simulator_teardown();
 
 #endif //ABM_SIMULATOR_H

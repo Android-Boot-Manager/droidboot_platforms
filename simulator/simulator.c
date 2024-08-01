@@ -10,7 +10,7 @@
 static pthread_t t, t2;
 static bool s_simulator_running, s_simulator_vol_down_pressed, s_simulator_vol_up_pressed, s_simulator_pwr_pressed;
 static uint32_t last_pressed_key;
-static JNIEnv* s_simulator_jnienv;
+static JavaVM* s_simulator_jvm;
 static jobject s_simulator_bitmap;
 static jint s_simulator_h, s_simulator_w;
 
@@ -25,7 +25,7 @@ int droidboot_internal_get_display_width()
 }
 
 JNIEXPORT void simulator_start(JNIEnv* env, jobject bitmap, jint w, jint h) {
-	s_simulator_jnienv = env;
+	(*env)->GetJavaVM(env, &s_simulator_jvm);
 	s_simulator_bitmap = bitmap;
 	s_simulator_h = h;
 	s_simulator_w = w;
@@ -42,26 +42,30 @@ JNIEXPORT void simulator_key(jint key) {
 void droidboot_internal_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p)
 {
 	if (s_simulator_bitmap != NULL) {
+		JNIEnv* env;
+		(*s_simulator_jvm)->GetEnv(s_simulator_jvm, (void **) &env, JNI_VERSION_1_6);
 		void *addr;
-		while (!AndroidBitmap_lockPixels(s_simulator_jnienv, s_simulator_bitmap, &addr)) {
+		while (!AndroidBitmap_lockPixels(env, s_simulator_bitmap, &addr)) {
 			droidboot_internal_platform_system_log("failed locking bitmap, trying again");
 			usleep(10000);
 		}
+		__android_log_print(ANDROID_LOG_VERBOSE, "droidboot", "locked fb %p", addr);
 		int w = (area->x2 - area->x1 + 1);
 		long int location = 0;
 		long int byte_location = 0;
 		unsigned char bit_location = 0;
 		int32_t y;
 		for (y = area->y1; y <= area->y2; y++) {
-			location = (area->x1 + 0) + (y + 0) * droidboot_internal_get_display_width();
-			memcpy(&addr[location], (uint32_t *) color_p, (area->x2 - area->y2 + 1) * 4);
+			location = ((area->x1 + 0) + (y + 0) * droidboot_internal_get_display_width()) * 4;
+			memcpy(&addr[location], (uint32_t *) color_p, w * 4);
 			color_p += w;
 		}
 
-		while (!AndroidBitmap_unlockPixels(s_simulator_jnienv, s_simulator_bitmap)) {
+		while (!AndroidBitmap_unlockPixels(env, s_simulator_bitmap)) {
 			droidboot_internal_platform_system_log("failed unlocking bitmap, trying again");
 			usleep(10000);
 		}
+		__android_log_print(ANDROID_LOG_VERBOSE, "droidboot", "unlocked fb %p", addr);
 	}
 	// Inform the graphics library that we are ready with the flushing
 	lv_disp_flush_ready(disp_drv);
@@ -140,21 +144,25 @@ bool droidboot_internal_use_double_buffering()
 //lvgl thread
 static void* droidboot_lv_tick_inc_thread(void * arg) {
 	/*Handle LitlevGL tick*/
+	(*s_simulator_jvm)->AttachCurrentThread(s_simulator_jvm, NULL, NULL);
 	while (s_simulator_running) {
 		sleep(1);
 		lv_tick_inc(1);
 		//lv_timer_handler();
 	}
+	(*s_simulator_jvm)->DetachCurrentThread(s_simulator_jvm);
 	return 0;
 }
 
 //lvgl thread
 static void* droidboot_lv_timer_handler_thread(void * arg) {
 	/*Handle LitlevGL tick*/
+	(*s_simulator_jvm)->AttachCurrentThread(s_simulator_jvm, NULL, NULL);
 	while (s_simulator_running) {
 		sleep(1);
 		lv_timer_handler();
 	}
+	(*s_simulator_jvm)->DetachCurrentThread(s_simulator_jvm);
 	return 0;
 }
 
@@ -169,8 +177,8 @@ JNIEXPORT void simulator_stop()
 	s_simulator_running = false;
 	pthread_join(t, NULL);
 	pthread_join(t2, NULL);
+	s_simulator_jvm = NULL;
 	s_simulator_bitmap = NULL;
-	s_simulator_jnienv = NULL;
 }
 
 void droidboot_internal_platform_on_screen_log(const char *buf)
