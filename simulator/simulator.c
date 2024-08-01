@@ -26,7 +26,7 @@ int droidboot_internal_get_display_width()
 
 JNIEXPORT void simulator_start(JNIEnv* env, jobject bitmap, jint w, jint h) {
 	(*env)->GetJavaVM(env, &s_simulator_jvm);
-	s_simulator_bitmap = bitmap;
+	s_simulator_bitmap = (*env)->NewGlobalRef(env, bitmap);
 	s_simulator_h = h;
 	s_simulator_w = w;
 	droidboot_init();
@@ -47,26 +47,24 @@ void droidboot_internal_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * are
 		if ((ret = (*s_simulator_jvm)->GetEnv(s_simulator_jvm, (void **) &env, JNI_VERSION_1_6)) != JNI_OK) {
 			__android_log_print(ANDROID_LOG_ERROR, "droidboot", "failed to get jni env: %d", ret);
 		}
-		void *addr;
-		while (!(ret = AndroidBitmap_lockPixels(env, s_simulator_bitmap, &addr))) {
+		uint32_t *addr;
+		while ((ret = AndroidBitmap_lockPixels(env, s_simulator_bitmap, (void **) &addr)) != ANDROID_BITMAP_RESULT_SUCCESS) {
 			__android_log_print(ANDROID_LOG_ERROR, "droidboot", "failed to lock bitmap (%d), trying again", ret);
 			usleep(10000);
 		}
-		__android_log_print(ANDROID_LOG_VERBOSE, "droidboot", "locked fb %p", addr);
-		int w = area->x2 - area->x1 + 1;
-		long int location = 0;
-		// TODO fix segv :)
-		for(int32_t y = area->y1; y <= area->y2; y++) {
-			location = (area->x1 + 0) + (y + 0) * s_simulator_w;
-			//memcpy(&addr[location], color_p, w);
-			color_p += w;
+		//__android_log_print(ANDROID_LOG_VERBOSE, "droidboot", "locked fb %p", addr);
+		for (uint32_t y = area->y1; y <= area->y2; y++) {
+			for (uint32_t x = area->x1; x <= area->x2; x++) {
+				addr[(y*s_simulator_w)+x] = 0xff << 24 | color_p->ch.blue << 16 | color_p->ch.green << 8 | color_p->ch.red;
+				color_p++;
+			}
 		}
 
-		while (!(ret = AndroidBitmap_unlockPixels(env, s_simulator_bitmap))) {
+		while ((ret = AndroidBitmap_unlockPixels(env, s_simulator_bitmap)) != ANDROID_BITMAP_RESULT_SUCCESS) {
 			__android_log_print(ANDROID_LOG_ERROR, "droidboot", "failed to unlock bitmap (%d), trying again", ret);
 			usleep(10000);
 		}
-		__android_log_print(ANDROID_LOG_VERBOSE, "droidboot", "unlocked fb %p", addr);
+		//__android_log_print(ANDROID_LOG_VERBOSE, "droidboot", "unlocked fb %p", addr);
 	}
 	// Inform the graphics library that we are ready with the flushing
 	lv_disp_flush_ready(disp_drv);
@@ -129,7 +127,7 @@ uint64_t droidboot_internal_sd_blkcnt()
 
 bool droidboot_internal_sd_exists()
 {
-	return false; // TODO
+	return true;
 }
 
 bool droidboot_internal_have_fallback()
@@ -148,6 +146,7 @@ static void* droidboot_lv_tick_inc_thread(void * arg) {
 	JavaVMAttachArgs args;
 	args.version = JNI_VERSION_1_6;
 	args.name = "lv_tick_inc_thread";
+	args.group = NULL;
 	JNIEnv* env;
 	(*s_simulator_jvm)->AttachCurrentThread(s_simulator_jvm, &env, &args);
 	while (s_simulator_running) {
@@ -165,6 +164,7 @@ static void* droidboot_lv_timer_handler_thread(void * arg) {
 	JavaVMAttachArgs args;
 	args.version = JNI_VERSION_1_6;
 	args.name = "lv_timer_handler_thread";
+	args.group = NULL;
 	JNIEnv* env;
 	(*s_simulator_jvm)->AttachCurrentThread(s_simulator_jvm, &env, &args);
 	while (s_simulator_running) {
@@ -181,12 +181,13 @@ void droidboot_internal_lvgl_threads_init()
 	pthread_create(&t2, NULL, droidboot_lv_timer_handler_thread, NULL);
 }
 
-JNIEXPORT void simulator_stop()
+JNIEXPORT void simulator_stop(JNIEnv* env)
 {
 	s_simulator_running = false;
 	pthread_join(t, NULL);
 	pthread_join(t2, NULL);
 	s_simulator_jvm = NULL;
+	(*env)->DeleteGlobalRef(env, s_simulator_bitmap);
 	s_simulator_bitmap = NULL;
 }
 
