@@ -55,7 +55,6 @@ JNIEXPORT void simulator_start(JNIEnv* env, jobject thiz, jobject bitmap, jint w
 	(*env)->DeleteGlobalRef(env, s_simulator_thiz);
 	s_simulator_thiz = NULL;
 	s_simulator_jvm = NULL;
-	exit(0);
 }
 
 JNIEXPORT void simulator_key(jint key)
