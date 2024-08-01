@@ -19,7 +19,6 @@ uint32_t droidboot_internal_sd_blklen();
 uint64_t droidboot_internal_sd_blkcnt();
 bool droidboot_internal_sd_exists();
 bool droidboot_internal_have_fallback();
-int droidboot_internal_get_disp_buffer_height();
 bool droidboot_internal_use_double_buffering();
 void droidboot_internal_lvgl_threads_init();
 void droidboot_internal_platform_on_screen_log(const char *buf);
@@ -33,6 +32,6 @@ void *droidboot_internal_get_dtb_load_addr();
 void *droidboot_internal_get_dtbo_load_addr();
 bool droidboot_internal_append_ramdisk_to_kernel();
 void droidboot_internal_platform_tasks();
-
+void simulator_teardown();
 
 #endif //ABM_SIMULATOR_H

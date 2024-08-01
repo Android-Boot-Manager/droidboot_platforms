@@ -53,14 +53,13 @@ int droidboot_platform_settings_dev_open(struct ext4_blockdev *bdev);
 int droidboot_platform_settings_dev_close(struct ext4_blockdev *bdev);
 
 droidboot_error droidboot_platform_init(void);
-ssize_t dridboot_sd_read_block(void *buf, uint32_t block, uint count);
-ssize_t dridboot_sd_write_block(const void *buf, uint32_t block, uint count);
+ssize_t droidboot_sd_read_block(void *buf, uint32_t block, uint count);
+ssize_t droidboot_sd_write_block(const void *buf, uint32_t block, uint count);
 uint32_t droidboot_sd_blklen(void);
 uint64_t droidboot_sd_blkcnt(void);
 bool droidboot_sd_exists(void);
 bool droidboot_have_fallback(void);
 
-int droidboot_get_disp_buffer_height(void);
 bool droidboot_use_double_buffering(void);
 
 void droidboot_lvgl_threads_init(void);

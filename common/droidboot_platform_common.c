@@ -42,12 +42,12 @@ droidboot_error droidboot_platform_init()
  return droidboot_internal_platform_init();
 }
 
-ssize_t dridboot_sd_read_block(void *buf, uint32_t block, uint count)
+ssize_t droidboot_sd_read_block(void *buf, uint32_t block, uint count)
 {
     return dridboot_internal_sd_read_block(buf, block, count);
 }
 
-ssize_t dridboot_sd_write_block(const void *buf, uint32_t block, uint count)
+ssize_t droidboot_sd_write_block(const void *buf, uint32_t block, uint count)
 {
     return dridboot_internal_sd_write_block(buf, block, count);
 }
@@ -70,11 +70,6 @@ bool droidboot_sd_exists()
 bool droidboot_have_fallback()
 {
     return droidboot_internal_have_fallback();
-}
-
-int droidboot_get_disp_buffer_height()
-{
-    return droidboot_internal_get_disp_buffer_height();
 }
 
 bool droidboot_use_double_buffering()
