@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "simulator.h"
 #include "droidboot_main.h"
+#include "droidboot_boot_logo.h"
 #include <android/log.h>
 #include <unistd.h>
 #include <pthread.h>
