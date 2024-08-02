@@ -5,12 +5,12 @@ void droidboot_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_col
     droidboot_internal_fb_flush(disp_drv, area, color_p);
 }
 
-int droidboot_get_display_height()
+lv_coord_t droidboot_get_display_height()
 {
     return droidboot_internal_get_display_height();
 }
 
-int droidboot_get_display_width()
+lv_coord_t droidboot_get_display_width()
 {
     return droidboot_internal_get_display_width();
 }
@@ -98,12 +98,12 @@ void droidboot_delay(unsigned int time)
     droidboot_internal_delay(time);
 }
 
-void droidboot_platform_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_size, void *ramdisk_raw, off_t ramdisk_size, void *dtb_raw, off_t dtb_raw_size, void *dtbo_raw, off_t dtbo_raw_size, char *options)
+void droidboot_platform_boot_linux_from_ram(void *kernel_raw, uint64_t kernel_raw_size, void *ramdisk_raw, uint64_t ramdisk_size, void *dtb_raw, uint64_t dtb_raw_size, void *dtbo_raw, uint64_t dtbo_raw_size, char *options)
 {
     droidboot_internal_boot_linux_from_ram(kernel_raw, kernel_raw_size, ramdisk_raw, ramdisk_size, dtb_raw, dtb_raw_size, dtbo_raw, dtbo_raw_size, options);
 }
 
-void droidboot_pre_ramdisk_load(void *kernel_raw, off_t kernel_raw_size)
+void droidboot_pre_ramdisk_load(void *kernel_raw, uint64_t kernel_raw_size)
 {
     droidboot_internal_pre_ramdisk_load(kernel_raw, kernel_raw_size);
 }

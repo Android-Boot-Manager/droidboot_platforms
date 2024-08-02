@@ -13,15 +13,15 @@ static bool s_simulator_running;
 uint8_t s_simulator_keymask;
 static JavaVM* s_simulator_jvm;
 static jobject s_simulator_bitmap, s_simulator_thiz;
-static jint s_simulator_h, s_simulator_w;
+static lv_coord_t s_simulator_h, s_simulator_w;
 extern int droidboot_exit;
 
-int droidboot_internal_get_display_height()
+lv_coord_t droidboot_internal_get_display_height()
 {
 	return s_simulator_h;
 }
 
-int droidboot_internal_get_display_width()
+lv_coord_t droidboot_internal_get_display_width()
 {
 	return s_simulator_w;
 }
@@ -33,13 +33,13 @@ JNIEXPORT void simulator_stop(JNIEnv* env)
 	droidboot_exit = 0;
 }
 
-JNIEXPORT void simulator_start(JNIEnv* env, jobject thiz, jobject bitmap, jint w, jint h)
+__attribute__((unused)) JNIEXPORT void simulator_start(JNIEnv* env, jobject thiz, jobject bitmap, jint w, jint h)
 {
 	(*env)->GetJavaVM(env, &s_simulator_jvm);
 	s_simulator_bitmap = (*env)->NewGlobalRef(env, bitmap);
 	s_simulator_thiz = (*env)->NewGlobalRef(env, thiz);
-	s_simulator_h = h;
-	s_simulator_w = w;
+	s_simulator_h = (lv_coord_t)h;
+	s_simulator_w = (lv_coord_t)w;
 	droidboot_init();
 	droidboot_show_dualboot_menu();
 	simulator_stop(env);
@@ -78,7 +78,7 @@ void droidboot_internal_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * are
 		//__android_log_print(ANDROID_LOG_VERBOSE, "droidboot", "locked fb %p", addr);
 		for (uint32_t y = area->y1; y <= area->y2; y++) {
 			for (uint32_t x = area->x1; x <= area->x2; x++) {
-				addr[(y*s_simulator_w)+x] = 0xff << 24 | color_p->ch.blue << 16 | color_p->ch.green << 8 | color_p->ch.red;
+				addr[(y*s_simulator_w)+x] = 0xffU << 24 | color_p->ch.blue << 16 | color_p->ch.green << 8 | color_p->ch.red;
 				color_p++;
 			}
 		}
@@ -261,12 +261,12 @@ void droidboot_internal_delay(unsigned int time)
 	usleep(time*1000);
 }
 
-void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_size, void *ramdisk_raw, off_t ramdisk_size, void *dtb_raw, off_t dtb_raw_size, void *dtbo_raw, off_t dtbo_raw_size, char *options)
+void droidboot_internal_boot_linux_from_ram(void *kernel_raw, uint64_t kernel_raw_size, void *ramdisk_raw, uint64_t ramdisk_size, void *dtb_raw, uint64_t dtb_raw_size, void *dtbo_raw, uint64_t dtbo_raw_size, char *options)
 {
 	// nothing happens
 }
 
-void droidboot_internal_pre_ramdisk_load(void *kernel_raw, off_t kernel_raw_size)
+void droidboot_internal_pre_ramdisk_load(void *kernel_raw, uint64_t kernel_raw_size)
 {
 	// nothing happens
 }

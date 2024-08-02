@@ -45,8 +45,8 @@
 #endif
 
 void droidboot_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
-int droidboot_get_display_height();
-int droidboot_get_display_width();
+lv_coord_t droidboot_get_display_height();
+lv_coord_t droidboot_get_display_width();
 void droidboot_key_read(lv_indev_drv_t * drv, lv_indev_data_t*data);
 
 int droidboot_platform_settings_dev_open(struct ext4_blockdev *bdev);
@@ -69,8 +69,8 @@ void droidboot_platform_system_log(const char *buf);
 
 void droidboot_delay(unsigned int time);
 
-void droidboot_platform_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_size, void *ramdisk_raw, off_t ramdisk_size, void *dtb_raw, off_t dtb_raw_size, void *dtbo_raw, off_t dtbo_raw_size, char *options);
-void droidboot_pre_ramdisk_load(void *kernel_raw, off_t kernel_raw_size);
+void droidboot_platform_boot_linux_from_ram(void *kernel_raw, uint64_t kernel_raw_size, void *ramdisk_raw, uint64_t ramdisk_size, void *dtb_raw, uint64_t dtb_raw_size, void *dtbo_raw, uint64_t dtbo_raw_size, char *options);
+void droidboot_pre_ramdisk_load(void *kernel_raw, uint64_t kernel_raw_size);
 void *droidboot_get_kernel_load_addr(void);
 void *droidboot_get_ramdisk_load_addr(void);
 bool droidboot_append_ramdisk_to_kernel(void);
