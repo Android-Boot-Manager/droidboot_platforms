@@ -142,6 +142,7 @@ ssize_t dridboot_internal_sd_read_block(void *buf, uint32_t block, uint count)
 	jsize lengthOfArray = (*env)->GetArrayLength(env, arr);
 	memcpy(buf, bufferPtr, lengthOfArray);
 	(*env)->ReleaseByteArrayElements(env, arr, bufferPtr, JNI_ABORT);
+	(*env)->DeleteLocalRef(env, arr);
 	return lengthOfArray;
 }
 
@@ -230,7 +231,17 @@ void droidboot_internal_lvgl_threads_init()
 
 void droidboot_internal_platform_on_screen_log(const char *buf)
 {
-	__android_log_print(ANDROID_LOG_INFO, "droidboot", "%s", buf); // TODO toast?
+	JNIEnv* env;
+	int ret;
+	if ((ret = (*s_simulator_jvm)->GetEnv(s_simulator_jvm, (void **) &env, JNI_VERSION_1_6)) != JNI_OK) {
+		__android_log_print(ANDROID_LOG_ERROR, "droidboot", "failed to get jni env: %d", ret);
+	}
+
+	jclass cls = (*env)->GetObjectClass(env, s_simulator_thiz);
+	jmethodID screenPrint = (*env)->GetMethodID(env, cls, "screenPrint", "(Ljava/lang/String;)V");
+	jstring str = (*env)->NewStringUTF(env, buf);
+	(*env)->CallVoidMethod(env, s_simulator_thiz, screenPrint, str);
+	(*env)->DeleteLocalRef(env, str);
 }
 
 void droidboot_internal_platform_system_log(const char *buf)
