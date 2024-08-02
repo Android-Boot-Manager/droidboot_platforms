@@ -8,7 +8,7 @@
 #include <jni.h>
 #include <stdlib.h>
 
-static pthread_t t, t2;
+static pthread_t t;
 static bool s_simulator_running;
 uint8_t s_simulator_keymask;
 static JavaVM* s_simulator_jvm;
@@ -41,11 +41,11 @@ __attribute__((unused)) JNIEXPORT void simulator_start(JNIEnv* env, jobject thiz
 	s_simulator_h = (lv_coord_t)h;
 	s_simulator_w = (lv_coord_t)w;
 	droidboot_init();
+	droidboot_show_boot_logo();
 	droidboot_show_dualboot_menu();
 	simulator_stop(env);
 	s_simulator_running = false;
 	pthread_join(t, NULL);
-	pthread_join(t2, NULL);
 	(*env)->DeleteGlobalRef(env, s_simulator_bitmap);
 	s_simulator_bitmap = NULL;
 	__android_log_print(ANDROID_LOG_INFO, "droidboot", "goodbye");
@@ -212,28 +212,9 @@ static void* droidboot_lv_tick_inc_thread(void * arg) {
 	return 0;
 }
 
-//lvgl thread
-static void* droidboot_lv_timer_handler_thread(void * arg) {
-	/*Handle LitlevGL tick*/
-	JavaVMAttachArgs args;
-	args.version = JNI_VERSION_1_6;
-	args.name = "lv_timer_handler_thread";
-	args.group = NULL;
-	JNIEnv* env;
-	(*s_simulator_jvm)->AttachCurrentThread(s_simulator_jvm, &env, &args);
-	while (s_simulator_running) {
-		droidboot_internal_delay(1);
-		lv_timer_handler();
-	}
-	if (s_simulator_jvm != NULL)
-		(*s_simulator_jvm)->DetachCurrentThread(s_simulator_jvm);
-	return 0;
-}
-
 void droidboot_internal_lvgl_threads_init()
 {
 	pthread_create(&t, NULL, droidboot_lv_tick_inc_thread, NULL);
-	pthread_create(&t2, NULL, droidboot_lv_timer_handler_thread, NULL);
 }
 
 void droidboot_internal_platform_on_screen_log(const char *buf)
@@ -296,8 +277,7 @@ bool droidboot_internal_append_ramdisk_to_kernel()
 	return false;
 }
 
-// Nothing to do here, we have threads
 void droidboot_internal_platform_tasks()
 {
-	droidboot_internal_delay(200);
+	droidboot_internal_delay(lv_timer_handler());
 }
