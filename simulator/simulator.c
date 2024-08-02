@@ -9,8 +9,8 @@
 #include <stdlib.h>
 
 static pthread_t t, t2;
-static bool s_simulator_running, s_simulator_vol_down_pressed, s_simulator_vol_up_pressed, s_simulator_pwr_pressed;
-static uint32_t last_pressed_key;
+static bool s_simulator_running;
+uint8_t s_simulator_keymask;
 static JavaVM* s_simulator_jvm;
 static jobject s_simulator_bitmap, s_simulator_thiz;
 static jint s_simulator_h, s_simulator_w;
@@ -59,9 +59,7 @@ JNIEXPORT void simulator_start(JNIEnv* env, jobject thiz, jobject bitmap, jint w
 
 JNIEXPORT void simulator_key(jint key)
 {
-	s_simulator_vol_down_pressed = key == 1;
-	s_simulator_vol_up_pressed = key == 2;
-	s_simulator_pwr_pressed = key == 3;
+	s_simulator_keymask |= key;
 }
 
 void droidboot_internal_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p)
@@ -75,7 +73,7 @@ void droidboot_internal_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * are
 		uint32_t *addr;
 		while ((ret = AndroidBitmap_lockPixels(env, s_simulator_bitmap, (void **) &addr)) != ANDROID_BITMAP_RESULT_SUCCESS) {
 			__android_log_print(ANDROID_LOG_ERROR, "droidboot", "failed to lock bitmap (%d), trying again", ret);
-			usleep(10000);
+			droidboot_internal_delay(10);
 		}
 		//__android_log_print(ANDROID_LOG_VERBOSE, "droidboot", "locked fb %p", addr);
 		for (uint32_t y = area->y1; y <= area->y2; y++) {
@@ -87,7 +85,7 @@ void droidboot_internal_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * are
 
 		while ((ret = AndroidBitmap_unlockPixels(env, s_simulator_bitmap)) != ANDROID_BITMAP_RESULT_SUCCESS) {
 			__android_log_print(ANDROID_LOG_ERROR, "droidboot", "failed to unlock bitmap (%d), trying again", ret);
-			usleep(10000);
+			droidboot_internal_delay(10);
 		}
 
 		jclass cls = (*env)->GetObjectClass(env, s_simulator_thiz);
@@ -99,23 +97,31 @@ void droidboot_internal_fb_flush(lv_disp_drv_t * disp_drv, const lv_area_t * are
 	lv_disp_flush_ready(disp_drv);
 }
 
-void droidboot_internal_key_read(lv_indev_drv_t* drv, lv_indev_data_t* data)
-{
-	if (s_simulator_vol_up_pressed) {
+void droidboot_internal_key_read(lv_indev_drv_t* drv, lv_indev_data_t* data) {
+	if (s_simulator_keymask & 1) {
 		data->key = LV_KEY_PREV;
-		last_pressed_key = LV_KEY_PREV;
 		data->state = LV_INDEV_STATE_PRESSED;
-	} else if (s_simulator_vol_down_pressed) {
+		s_simulator_keymask &= ~1;
+	} else if (s_simulator_keymask & 2) {
 		data->key = LV_KEY_NEXT;
-		last_pressed_key = LV_KEY_NEXT;
 		data->state = LV_INDEV_STATE_PRESSED;
-	} else if (s_simulator_pwr_pressed) {
+		s_simulator_keymask &= ~2;
+	} else if (s_simulator_keymask & 4) {
 		data->key = LV_KEY_ENTER;
-		last_pressed_key = LV_KEY_ENTER;
 		data->state = LV_INDEV_STATE_PRESSED;
-	} else {
-		data->key=last_pressed_key;
+		s_simulator_keymask &= ~4;
+	} else if (s_simulator_keymask & 8) {
+		data->key = LV_KEY_PREV;
 		data->state = LV_INDEV_STATE_RELEASED;
+		s_simulator_keymask &= ~8;
+	} else if (s_simulator_keymask & 16) {
+		data->key = LV_KEY_NEXT;
+		data->state = LV_INDEV_STATE_RELEASED;
+		s_simulator_keymask &= ~16;
+	} else if (s_simulator_keymask & 32) {
+		data->key = LV_KEY_ENTER;
+		data->state = LV_INDEV_STATE_RELEASED;
+		s_simulator_keymask &= ~32;
 	}
 }
 
@@ -198,11 +204,11 @@ static void* droidboot_lv_tick_inc_thread(void * arg) {
 	JNIEnv* env;
 	(*s_simulator_jvm)->AttachCurrentThread(s_simulator_jvm, &env, &args);
 	while (s_simulator_running) {
-		sleep(1);
+		droidboot_internal_delay(1);
 		lv_tick_inc(1);
-		//lv_timer_handler();
 	}
-	(*s_simulator_jvm)->DetachCurrentThread(s_simulator_jvm);
+	if (s_simulator_jvm != NULL)
+		(*s_simulator_jvm)->DetachCurrentThread(s_simulator_jvm);
 	return 0;
 }
 
@@ -216,10 +222,11 @@ static void* droidboot_lv_timer_handler_thread(void * arg) {
 	JNIEnv* env;
 	(*s_simulator_jvm)->AttachCurrentThread(s_simulator_jvm, &env, &args);
 	while (s_simulator_running) {
-		sleep(1);
+		droidboot_internal_delay(1);
 		lv_timer_handler();
 	}
-	(*s_simulator_jvm)->DetachCurrentThread(s_simulator_jvm);
+	if (s_simulator_jvm != NULL)
+		(*s_simulator_jvm)->DetachCurrentThread(s_simulator_jvm);
 	return 0;
 }
 
@@ -292,5 +299,5 @@ bool droidboot_internal_append_ramdisk_to_kernel()
 // Nothing to do here, we have threads
 void droidboot_internal_platform_tasks()
 {
-	usleep(200000);
+	droidboot_internal_delay(200);
 }
