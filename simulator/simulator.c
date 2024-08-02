@@ -293,7 +293,7 @@ void *droidboot_internal_get_dtbo_load_addr()
 
 bool droidboot_internal_append_ramdisk_to_kernel()
 {
-	return true;
+	return false;
 }
 
 // Nothing to do here, we have threads
