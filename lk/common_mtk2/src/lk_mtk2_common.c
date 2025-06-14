@@ -211,7 +211,7 @@ void droidboot_mtk_main_menu_add_options(lv_obj_t * list1)
 
 int droidboot_mtk_show_boot_mode_menu()
 {
-    exit=-1;
+    exit_mtk=-1;
 
     lv_obj_t * win = lv_win_create(lv_scr_act(), lv_pct(6));
     lv_obj_set_pos(win, 0, 0);
@@ -223,9 +223,9 @@ int droidboot_mtk_show_boot_mode_menu()
     lv_obj_set_pos(list1, 0, 0);
     lv_obj_align(list1, LV_ALIGN_BOTTOM_MID, 0, 0);
     droidboot_mtk_main_menu_add_options(list1);
-    while(exit==-1){
+    while(exit_mtk==-1){
         thread_sleep(50);
     }
-    return exit;
+    return exit_mtk;
 }
 
