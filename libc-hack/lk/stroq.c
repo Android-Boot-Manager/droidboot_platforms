@@ -57,7 +57,7 @@
 
 #include <limits.h>
 #include <errno.h>
-#include <platform/errno.h>
+//#include <platform/errno.h>
 #include <ctype.h>
 #include <stdlib.h>
 
